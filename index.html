@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>کیدو کاراته | Kido Karate</title>
-  <script src="https://tapi.bale.ai/miniapp.js?1"></script>
+  <script src="https://tapi.bale.ai/miniapp.js?1" async></script>
   <style>
     * {
       box-sizing: border-box;
@@ -51,8 +51,7 @@
       pointer-events: none;
     }
     .hud-pill {
-      background: rgba(20, 20, 20, 0.58);
-      backdrop-filter: blur(4px);
+      background: rgba(20, 20, 20, 0.65);
       border: 2px solid rgba(255, 255, 255, 0.25);
       color: #fff;
       padding: 6px 14px;
@@ -87,7 +86,7 @@
       width: 38px;
       height: 38px;
       border-radius: 50%;
-      background: rgba(20, 20, 20, 0.6);
+      background: rgba(20, 20, 20, 0.65);
       border: 2px solid rgba(255, 255, 255, 0.4);
       color: #fff;
       font-size: 18px;
@@ -100,8 +99,7 @@
     .overlay {
       position: absolute;
       inset: 0;
-      background: rgba(24, 19, 14, 0.88);
-      backdrop-filter: blur(4px);
+      background: rgba(24, 19, 14, 0.9);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -131,7 +129,7 @@
     .btn {
       width: 100%;
       max-width: 280px;
-      padding: 13px 18px;
+      padding: 14px 18px;
       border: none;
       border-radius: 14px;
       font-size: 16px;
@@ -140,6 +138,7 @@
       margin-bottom: 11px;
       transition: transform 0.08s;
       box-shadow: 0 5px 0 rgba(0,0,0,0.35);
+      touch-action: manipulation;
     }
     .btn:active {
       transform: translateY(3px);
@@ -187,7 +186,6 @@
       font-size: 15px;
       margin: 6px 0;
     }
-    /* استایل جدول رنکینگ ماهانه */
     #leaderboard-box {
       width: 100%;
       max-width: 350px;
@@ -283,7 +281,7 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      background: rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.12);
       padding: 6px 14px;
       border-radius: 20px;
       margin-bottom: 16px;
@@ -319,7 +317,7 @@
         <span id="belt-indicator"></span>
         <span id="belt-text">کمربند سفید</span>
       </div>
-      <button id="sound-btn" onclick="toggleSound()" title="صدا">🔊</button>
+      <button type="button" id="sound-btn" title="صدا">🔊</button>
     </div>
 
     <div id="score-big">0</div>
@@ -329,13 +327,13 @@
     <!-- صفحه شروع -->
     <div id="start-screen" class="overlay">
       <div class="title-logo">🥋 کیدو کاراته</div>
-      <div id="user-badge">خوش آمدی مبارز!</div>
+      <div id="user-badge">🥋 خوش آمدی مبارز!</div>
       <p class="subtitle">
         به چپ و راست صفحه ضربه بزن تا تنه درخت را خرد کنی!<br>
         مراقب شاخه‌های چوبی بالای سرت باش و در لیگ ماهانه اول شو.
       </p>
-      <button class="btn btn-play" onclick="startGame()">شروع مبارزه 🔥</button>
-      <button class="btn btn-rank" onclick="openLeaderboard()">🏆 جدول قهرمانان ماه</button>
+      <button type="button" id="btn-start-main" class="btn btn-play">شروع مبارزه 🔥</button>
+      <button type="button" id="btn-rank-main" class="btn btn-rank">🏆 جدول قهرمانان ماه</button>
     </div>
 
     <!-- صفحه باخت -->
@@ -346,5 +344,14 @@
         <div class="stat-line"><span>رکورد این ماه تو:</span><strong id="best-score">0</strong></div>
         <div class="stat-line"><span>درجه کمربند:</span><strong id="final-belt">سفید</strong></div>
       </div>
-      <button id="revive-btn" class="btn btn-revive" onclick="reviveGame()">❤️ ادامه بازی (شانس مجدد)</button>
-      <button class="btn btn-rank" onclick="openLeaderboard()">🏆 جدول قهرمانان ماه</button>
+      <button type="button" id="revive-btn" class="btn btn-revive">❤️ ادامه بازی (شانس مجدد)</button>
+      <button type="button" id="btn-rank-over" class="btn btn-rank">🏆 جدول قهرمانان ماه</button>
+      <button type="button" id="btn-share-over" class="btn btn-share">🚀 ارسال چالش به دوستان</button>
+      <button type="button" id="btn-restart-over" class="btn btn-play">بازی مجدد 🔄</button>
+    </div>
+
+    <!-- صفحه جدول رنکینگ ماهانه -->
+    <div id="leaderboard-screen" class="overlay hidden">
+      <div class="title-logo" style="font-size:26px;">🏆 برترین‌های این ماه</div>
+      <p style="font-size:12px; color:#d8c8b4; margin-top:0; margin-bottom:12px;">
+        ۲۰ قهرمان برتر ماه
