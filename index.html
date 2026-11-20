@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>کیدو تکواندوکار | Kido Taekwondo</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      font-family: Tahoma, Arial, sans-serif;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(180deg, #1a2a6c 0%, #2a4858 55%, #f4a261 100%);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      color: #fff;
+    }
+    #hud {
+      width: 100%;
+      max-width: 480px;
+      padding: 14px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+    }
+    .badge {
+      background: rgba(0, 0, 0, 0.45);
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 15px;
+      border: 1px solid rgba(255,255,255,0.2);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    #belt-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 1px solid #333;
+      display: inline-block;
+    }
+    #timer-wrap {
+      width: 100%;
+      max-width: 440px;
+      padding: 0 20px;
+      z-index: 10;
+    }
+    #timer-bg {
+      width: 100%;
+      height: 14px;
+      background: rgba(0,0,0,0.4);
+      border-radius: 10px;
+      overflow: hidden;
+      border: 2px solid rgba(255,255,255,0.3);
+    }
+    #timer-bar {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, #ff4d4d, #f9cb28, #2ecc71);
+      transition: width 0.05s linear;
+    }
+    #arena {
+      position: relative;
+      width: 100%;
+      max-width: 480px;
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      overflow: hidden;
+    }
+    #bag-column {
+      position: relative;
+      width: 90px;
+      height: 100%;
+      display: flex;
+      flex-direction: column-reverse;
+      align-items: center;
+      padding-bottom: 70px;
+    }
+    .bag-segment {
+      width: 78px;
+      height: 76px;
+      background: linear-gradient(90deg, #c0392b, #e74c3c, #962d22);
+      border-bottom: 3px solid #78281f;
+      border-radius: 8px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.4);
+    }
+    .bag-segment::after {
+      content: "";
+      width: 100%;
+      height: 8px;
+      background: rgba(0,0,0,0.25);
+      position: absolute;
+      top: 10px;
+    }
+    .obstacle {
+      position: absolute;
+      top: 18px;
+      width: 95px;
+      height: 36px;
+      background: linear-gradient(180deg, #f39c12, #d35400);
+      border: 3px solid #fff;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 13px;
+      color: #fff;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+    }
+    .obstacle.left {
+      right: 76px;
+    }
+    .obstacle.right {
+      left: 76px;
+    }
+    #player {
+      position: absolute;
+      bottom: 72px;
+      width: 74px;
+      height: 95px;
+      transition: transform 0.08s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 5;
+    }
+    #player.left {
+      transform: translateX(-85px);
+    }
+    #player.right {
+      transform: translateX(85px) scaleX(-1);
+    }
+    .kido-head {
+      width: 38px;
+      height: 38px;
+      background: #ffdbac;
+      border-radius: 50%;
+      position: relative;
+      border: 2px solid #333;
+    }
+    .headband {
+      position: absolute;
+      top: 8px;
+      left: -2px;
+      width: 38px;
+      height: 8px;
+      background: #e74c3c;
+    }
+    .kido-body {
+      width: 44px;
+      height: 44px;
+      background: #ffffff;
+      border-radius: 10px 10px 4px 4px;
+      border: 2px solid #333;
+      position: relative;
+      margin-top: -2px;
+    }
+    #player-belt {
+      position: absolute;
+      bottom: 10px;
+      left: -2px;
+      width: 44px;
+      height: 8px;
+      background: #ffffff;
+      border-top: 1px solid #333;
+      border-bottom: 1px solid #333;
+    }
+    .kick-leg {
+      position: absolute;
+      right: -24px;
+      bottom: 14px;
+      width: 32px;
+      height: 14px;
+      background: #fff;
+      border: 2px solid #333;
+      border-radius: 8px;
+      opacity: 0;
+      transform: rotate(-15deg);
+    }
+    #player.kicking .kick-leg {
+      opacity: 1;
+    }
+    #floor {
+      width: 100%;
+      height: 72px;
+      background: #2c3e50;
+      border-top: 5px solid #e67e22;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 10;
+    }
+    .tap-hint {
+      font-size: 14px;
+      opacity: 0.85;
+      font-weight: bold;
+    }
+    #controls {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      z-index: 8;
+    }
+    .touch-zone {
+      flex: 1;
+      height: 100%;
+    }
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.9);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px;
+      z-index: 30;
+    }
+    .hidden {
+      display: none !important;
+    }
+    h1 {
+      font-size: 32px;
+      margin: 0 0 10px;
+      color: #f9cb28;
+      text-shadow: 0 3px 10px rgba(0,0,0,0.5);
+    }
+    p {
+      font-size: 15px;
+      line-height: 1.7;
+      color: #e2e8f0;
+      max-width: 340px;
+      margin: 0 0 22px;
+    }
+    .btn {
+      width: 100%;
+      max-width: 280px;
+      padding: 14px 20px;
+      border: none;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #f39c12, #e67e22);
+      color: #fff;
+    }
+    .btn-revive {
+      background: linear-gradient(135deg, #2ecc71, #27ae60);
+      color: #fff;
+    }
+    .btn-share {
+      background: linear-gradient(135deg, #3498db, #2980b9);
+      color: #fff;
+    }
+    .score-box {
+      background: rgba(255,255,255,0.1);
+      padding: 16px 24px;
+      border-radius: 16px;
+      margin-bottom: 20px;
+      width: 100%;
+      max-width: 280px;
+    }
+    .score-row {
+      display: flex;
+      justify-content: space-between;
+      margin: 6px 0;
+      font-size: 16px;
+    }
+    #toast {
+      position: fixed;
+      top: 70px;
+      background: #2ecc71;
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: bold;
+      z-index: 50;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="toast">متن چالش کپی شد! در بله برای دوستانت بفرست</div>
+
+  <div id="hud">
+    <div class="badge">
+      <span id="belt-dot"></span>
+      <span id="belt-name">کمربند سفید</span>
+    </div>
+    <div class="badge">امتیاز: <span id="score">0</span></div>
+  </div>
+
+  <div id="timer-wrap">
+    <div id="timer-bg">
+      <div id="timer-bar"></div>
+    </div>
+  </div>
+
+  <div id="arena">
+    <div id="bag-column"></div>
+    <div id="player" class="left">
+      <div class="kido-head"><div class="headband"></div></div>
+      <div class="kido-body">
+        <div id="player-belt"></div>
+        <div class="kick-leg"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="floor">
+    <span class="tap-hint">👈 ضربه سمت چپ</span>
+    <span class="tap-hint">ضربه سمت راست 👉</span>
+  </div>
+
+  <div id="controls">
+    <div class="touch-zone" id="btn-left"></div>
+    <div class="touch-zone" id="btn-right"></div>
+  </div>
+
+  <!-- صفحه شروع -->
+  <div id="start-screen" class="overlay">
+    <h1>🥋 کیدو تکواندوکار</h1>
+    <p>با ضربه به چپ و راست کیسه بوکس را بشکن، مراقب موانع چوبی باش و کمربندت را تا دان مشکی ارتقا بده!</p>
+    <button class="btn btn-primary" onclick="startGame()">شروع مبارزه 🔥</button>
+  </div>
+
+  <!-- صفحه پایان بازی -->
+  <div id="gameover-screen" class="overlay hidden">
+    <h1>پایان مبارزه!</h1>
+    <div class="score-box">
+      <div class="score-row"><span>امتیاز شما:</span><strong id="final-score">0</strong></div>
+      <div class="score-row"><span>بهترین رکورد:</span><strong id="best-score">0</strong></div>
+      <div class="score-row"><span>درجه کمربند:</span><strong id="final-belt">سفید</strong></div>
+    </div>
+    <button id="revive-btn" class="btn btn-revive" onclick="revivePlayer()">❤️ ادامه بازی (شانس مجدد)</button>
+    <button class="btn btn-share" onclick="shareChallenge()">🚀 ارسال چالش به دوستان</button>
+    <button class="btn btn-primary" onclick="startGame()">بازی مجدد 🔄</button>
+  </div>
+
+  <script>
+    const belts = [
+      { min: 0, name: "سفید", color: "#ffffff" },
+      { min: 20, name: "زرد", color: "#f1c40f" },
+      { min: 50, name: "سبز", color: "#2ecc71" },
+      { min: 90, name: "آبی", color: "#3498db" },
+      { min: 140, name: "قرمز", color: "#e74c3c" },
+      { min: 200, name: "مشکی", color: "#111111" }
+    ];
+
+    let segments = [];
+    let playerSide = "left";
+    let score = 0;
+    let bestScore = localStorage.getItem("kido_best") || 0;
+    let timeLeft = 100;
+    let isPlaying = false;
+    let usedRevive = false;
+    let timerInterval = null;
+
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playSound(freq, type, duration) {
+      try {
+        if (audioCtx.state === "suspended") audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    function initBag() {
+      segments = ["none", "none"];
+      for (let i = 0; i < 8; i++) {
+        addSegment();
+      }
+      renderBag();
+    }
+
+    function addSegment() {
+      const last = segments[segments.length - 1];
+      if (last !== "none") {
+        segments.push("none");
+      } else {
+        const r = Math.random();
+        if (r < 0.38) segments.push("left");
+        else if (r < 0.76) segments.push("right");
+        else segments.push("none");
+      }
+    }
+
+    function renderBag() {
+      const col = document.getElementById("bag-column");
+      col.innerHTML = "";
+      segments.forEach((obs) => {
+        const div = document.createElement("div");
+        div.className = "bag-segment";
+        if (obs === "left" || obs === "right") {
+          const branch = document.createElement("div");
+          branch.className = `obstacle ${obs}`;
+          branch.innerText = "مانع 🪵";
+          div.appendChild(branch);
+        }
+        col.appendChild(div);
+      });
+    }
+
+    function updateBelt() {
+      let current = belts[0];
+      for (const b of belts) {
+        if (score >= b.min) current = b;
+      }
+      document.getElementById("belt-name").innerText = "کمربند " + current.name;
+      document.getElementById("belt-dot").style.background = current.color;
+      document.getElementById("player-belt").style.background = current.color;
+      return current.name;
+    }
+
+    function startGame() {
+      score = 0;
+      timeLeft = 100;
+      playerSide = "left";
+      usedRevive = false;
+      isPlaying = true;
+
+      document.getElementById("score").innerText = score;
+      document.getElementById("start-screen").classList.add("hidden");
+      document.getElementById("gameover-screen").classList.add("hidden");
+      document.getElementById("revive-btn").classList.remove("hidden");
+
+      const player = document.getElementById("player");
+      player.className = "left";
+      updateBelt();
+      initBag();
+
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        if (!isPlaying) return;
+        const drain = 0.65 + Math.min(score * 0.006, 1.3);
+        timeLeft -= drain;
+        if (timeLeft <= 0) {
+          timeLeft = 0;
+          endGame();
+        }
+        document.getElementById("timer-bar").style.width = timeLeft + "%";
+      }, 50);
+    }
+
+    function kick(side) {
+      if (!isPlaying) return;
+      playerSide = side;
+      const player = document.getElementById("player");
+      player.className = side + " kicking";
+      setTimeout(() => player.classList.remove("kicking"), 90);
+
+      if (segments[0] === playerSide) {
+        endGame();
+        return;
+      }
+
+      segments.shift();
+      addSegment();
+      renderBag();
+
+      if (segments[0] === playerSide) {
+        endGame();
+        return;
+      }
+
+      score++;
+      timeLeft = Math.min(100, timeLeft + 6.5);
+      document.getElementById("score").innerText = score;
+      document.getElementById("timer-bar").style.width = timeLeft + "%";
+      updateBelt();
+      playSound(240 + (score % 10) * 20, "triangle", 0.09);
+    }
+
+    function endGame() {
+      isPlaying = false;
+      clearInterval(timerInterval);
+      playSound(110, "sawtooth", 0.35);
+
+      if (score > bestScore) {
+        bestScore = score;
+        localStorage.setItem("kido_best", bestScore);
+      }
+
+      const beltName = updateBelt();
+      document.getElementById("final-score").innerText = score;
+      document.getElementById("best-score").innerText = bestScore;
+      document.getElementById("final-belt").innerText = beltName;
+
+      if (usedRevive) {
+        document.getElementById("revive-btn").classList.add("hidden");
+      }
+      document.getElementById("gameover-screen").classList.remove("hidden");
+    }
+
+    function revivePlayer() {
+      if (usedRevive) return;
+      usedRevive = true;
+      segments[0] = "none";
+      segments[1] = "none";
+      renderBag();
+      timeLeft = 85;
+      isPlaying = true;
+      document.getElementById("gameover-screen").classList.add("hidden");
+
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        if (!isPlaying) return;
+        const drain = 0.65 + Math.min(score * 0.006, 1.3);
+        timeLeft -= drain;
+        if (timeLeft <= 0) {
+          timeLeft = 0;
+          endGame();
+        }
+        document.getElementById("timer-bar").style.width = timeLeft + "%";
+      }, 50);
+    }
+
+    function shareChallenge() {
+      const belt = updateBelt();
+      const text = `🥋 من در بازی کیدو تکواندوکار امتیاز ${score} و کمربند ${belt} گرفتم!\nفکر می‌کنی می‌تونی رکوردم رو بزنی؟ 👇\n${window.location.href}`;
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(text);
+      }
+      const toast = document.getElementById("toast");
+      toast.style.opacity = "1";
+      setTimeout(() => (toast.style.opacity = "0"), 3000);
+    }
+
+    document.getElementById("btn-left").addEventListener("pointerdown", (e) => {
+      e.preventDefault();
+      kick("left");
+    });
+    document.getElementById("btn-right").addEventListener("pointerdown", (e) => {
+      e.preventDefault();
+      kick("right");
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft") kick("left");
+      if (e.key === "ArrowRight") kick("right");
+    });
+  </script>
+</body>
+</html>
