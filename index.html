@@ -85,20 +85,9 @@ if(window.Bale&&Bale.WebApp){Bale.WebApp.ready();Bale.WebApp.expand();const u=Ba
 }catch(e){}
 document.getElementById("ub").innerText="🥋 مبارز: "+usr.name;
 
-async function sv(sc,bl){
-if(sc<=0)return;
-const u=DB+"/"+mk()+"/"+usr.id+".json";
-try{const r=await fetch(u),ex=await r.json();if(ex&&ex.score>=sc)return;
-await fetch(u,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:usr.name,photo:usr.photo,score:sc,belt:bl,updatedAt:Date.now()})})}catch(e){}
-}
-
-async function rk(){
-const box=document.getElementById("lb");
-box.innerHTML="<div style='padding:20px'>در حال دریافت رتبه‌ها...</div>";
-document.getElementById("s3").classList.remove("hd");
-try{
-const r=await fetch(DB+"/"+mk()+".json"),d=await r.json();
-if(!d){box.innerHTML="<div style='padding:20px;color:#ffd166'>هنوز رکوردی ثبت نشده!</div>";return}
+let cachedHtml=localStorage.getItem("kcache_"+mk())||"";
+function buildBoard(d){
+if(!d)return"<div style='padding:20px;color:#ffd166'>هنوز رکوردی ثبت نشده!</div>";
 const list=Object.keys(d).map(k=>({uid:k,...d[k]})).sort((a,b)=>b.score-a.score||(a.updatedAt||9e15)-(b.updatedAt||9e15));
 let cr=1;list.forEach((x,i)=>{if(i>0&&x.score<list[i-1].score)cr=i+1;x.rank=cr});
 const row=(x,me)=>{
@@ -110,8 +99,33 @@ return"<div class='rr "+(me?"me":"")+"'><div class='rl'><div class='rn'>"+bg+"</
 let h=list.slice(0,20).map(x=>row(x,x.uid===usr.id)).join("");
 const mi=list.findIndex(x=>x.uid===usr.id);
 if(mi>=20)h+="<div style='color:#ffd166;font-size:12px;margin:8px 0'>••• جایگاه شما •••</div>"+row(list[mi],true);
-box.innerHTML=h;
-}catch(e){box.innerHTML="<div style='padding:20px;color:#ff6b6b'>خطا در دریافت جدول</div>"}
+return h;
+}
+
+async function prefetchBoard(){
+try{
+const r=await fetch(DB+"/"+mk()+".json"),d=await r.json();
+cachedHtml=buildBoard(d);
+localStorage.setItem("kcache_"+mk(),cachedHtml);
+if(!document.getElementById("s3").classList.contains("hd"))document.getElementById("lb").innerHTML=cachedHtml;
+}catch(e){}
+}
+prefetchBoard();
+
+async function sv(sc,bl){
+if(sc<=0)return;
+const u=DB+"/"+mk()+"/"+usr.id+".json";
+try{
+await fetch(u,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:usr.name,photo:usr.photo,score:sc,belt:bl,updatedAt:Date.now()})});
+prefetchBoard();
+}catch(e){}
+}
+
+function rk(){
+const box=document.getElementById("lb");
+box.innerHTML=cachedHtml||"<div style='padding:20px'>در حال دریافت رتبه‌ها...</div>";
+document.getElementById("s3").classList.remove("hd");
+prefetchBoard();
 }
 
 const cv=document.getElementById("c"),ctx=cv.getContext("2d");
@@ -146,8 +160,8 @@ score++;document.getElementById("sb").innerText=score;tm=Math.min(100,tm+5.8);gB
 
 function over(){
 play=false;shk=10;beep(130,48,.35,"sawtooth");
-const b=gBelt();if(score>best){best=score;localStorage.setItem(bkey,best)}
-sv(score,b.n);
+const b=gBelt();
+if(score>best){best=score;localStorage.setItem(bkey,best);sv(score,b.n);}
 document.getElementById("fs").innerText=score;document.getElementById("bs").innerText=best;document.getElementById("fb").innerText=b.n;
 if(usedRv)document.getElementById("rv").classList.add("hd");
 setTimeout(()=>document.getElementById("s2").classList.remove("hd"),300);
