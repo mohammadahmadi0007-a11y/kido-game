@@ -1,353 +1,197 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>کیدو کاراته | Kido Karate</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      user-select: none;
-      -webkit-user-select: none;
-      -webkit-tap-highlight-color: transparent;
-      font-family: Tahoma, Arial, sans-serif;
-    }
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background: #1a1a1a;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    #game-wrapper {
-      position: relative;
-      width: 100%;
-      max-width: 480px;
-      height: 100%;
-      overflow: hidden;
-      background: linear-gradient(180deg, #648c7a 0%, #9db28c 42%, #e8b365 72%, #c9933b 72%, #b07d2b 100%);
-    }
-    canvas {
-      display: block;
-      width: 100%;
-      height: 100%;
-    }
-    #top-bar {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      padding: 12px 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      z-index: 15;
-    }
-    .hud-pill {
-      background: rgba(20, 20, 20, 0.7);
-      border: 2px solid rgba(255, 255, 255, 0.25);
-      color: #fff;
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 13px;
-      font-weight: bold;
-      display: flex;
-      align-items: center;
-      gap: 7px;
-    }
-    #belt-indicator {
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      background: #ffffff;
-      border: 1.5px solid #111;
-    }
-    #score-big {
-      position: absolute;
-      top: 52px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 46px;
-      font-weight: 900;
-      color: #ffffff;
-      text-shadow: 0 4px 0 #5a3818;
-      z-index: 14;
-      pointer-events: none;
-    }
-    #sound-btn {
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      background: rgba(20, 20, 20, 0.7);
-      border: 2px solid rgba(255, 255, 255, 0.4);
-      color: #fff;
-      font-size: 18px;
-      cursor: pointer;
-    }
-    .overlay {
-      position: absolute;
-      inset: 0;
-      background: rgba(24, 19, 14, 0.92);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 22px;
-      z-index: 99;
-      color: #fff;
-    }
-    .hidden {
-      display: none !important;
-    }
-    .title-logo {
-      font-size: 34px;
-      font-weight: 900;
-      color: #ffcc33;
-      text-shadow: 0 4px 0 #8a3b08;
-      margin-bottom: 8px;
-    }
-    .subtitle {
-      font-size: 14px;
-      line-height: 1.75;
-      color: #f1e6d2;
-      max-width: 320px;
-      margin-bottom: 22px;
-    }
-    .btn {
-      width: 100%;
-      max-width: 280px;
-      padding: 15px 18px;
-      border: none;
-      border-radius: 14px;
-      font-size: 17px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-bottom: 12px;
-      box-shadow: 0 5px 0 rgba(0,0,0,0.4);
-      position: relative;
-      z-index: 100;
-      touch-action: manipulation;
-    }
-    .btn:active {
-      transform: translateY(3px);
-    }
-    .btn-play {
-      background: #ff8c00;
-      color: #fff;
-      border: 2px solid #ffd166;
-    }
-    .btn-rank {
-      background: #f1c40f;
-      color: #2c1e05;
-      border: 2px solid #fff3b0;
-    }
-    .btn-revive {
-      background: #2ec4b6;
-      color: #fff;
-      border: 2px solid #9bf6ff;
-    }
-    .btn-share {
-      background: #3a86ff;
-      color: #fff;
-      border: 2px solid #90dbf4;
-    }
-    .btn-back {
-      background: rgba(255, 255, 255, 0.2);
-      color: #fff;
-      border: 1.5px solid rgba(255, 255, 255, 0.4);
-      margin-top: 10px;
-    }
-    .stats-card {
-      background: rgba(255, 255, 255, 0.1);
-      border: 2px solid rgba(255, 204, 51, 0.4);
-      border-radius: 16px;
-      padding: 14px 20px;
-      width: 100%;
-      max-width: 280px;
-      margin-bottom: 18px;
-    }
-    .stat-line {
-      display: flex;
-      justify-content: space-between;
-      font-size: 15px;
-      margin: 6px 0;
-    }
-    #leaderboard-box {
-      width: 100%;
-      max-width: 350px;
-      max-height: 58vh;
-      overflow-y: auto;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1.5px solid rgba(255, 204, 51, 0.35);
-      border-radius: 16px;
-      padding: 8px;
-    }
-    .rank-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px 10px;
-      margin-bottom: 6px;
-      background: rgba(0, 0, 0, 0.4);
-      border-radius: 12px;
-    }
-    .rank-row.is-me {
-      background: rgba(255, 159, 28, 0.32);
-      border: 1.5px solid #ff9f1c;
-    }
-    .rank-left {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      overflow: hidden;
-    }
-    .rank-num {
-      min-width: 28px;
-      font-size: 14px;
-      font-weight: 900;
-      text-align: center;
-      color: #ffd166;
-    }
-    .rank-avatar {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      object-fit: cover;
-      background: #4a3520;
-      border: 2px solid #ffcc33;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      font-size: 15px;
-      color: #fff;
-      flex-shrink: 0;
-    }
-    .rank-info {
-      text-align: right;
-      overflow: hidden;
-    }
-    .rank-name {
-      font-size: 13px;
-      font-weight: bold;
-      color: #fff;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 135px;
-    }
-    .rank-belt {
-      font-size: 11px;
-      color: #d8c8b4;
-    }
-    .rank-score-box {
-      text-align: left;
-      background: rgba(255, 204, 51, 0.15);
-      border: 1px solid rgba(255, 204, 51, 0.35);
-      padding: 4px 9px;
-      border-radius: 10px;
-    }
-    .rank-score-val {
-      font-size: 15px;
-      font-weight: 900;
-      color: #ffcc33;
-      display: block;
-    }
-    .rank-score-lbl {
-      font-size: 9px;
-      color: #f1e6d2;
-      display: block;
-      text-align: center;
-    }
-    #user-badge {
-      background: rgba(255,255,255,0.12);
-      padding: 6px 14px;
-      border-radius: 20px;
-      margin-bottom: 16px;
-      font-size: 13px;
-      color: #ffd166;
-    }
-    #toast {
-      position: absolute;
-      top: 65px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #27ae60;
-      color: #fff;
-      padding: 10px 18px;
-      border-radius: 20px;
-      font-size: 13px;
-      font-weight: bold;
-      white-space: nowrap;
-      z-index: 150;
-      opacity: 0;
-      transition: opacity 0.25s;
-      pointer-events: none;
-    }
-  </style>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>کیدو کاراته</title>
+<style>
+*{box-sizing:border-box;user-select:none;-webkit-user-select:none;font-family:Tahoma,sans-serif}
+html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#1a1a1a;display:flex;justify-content:center;align-items:center}
+#w{position:relative;width:100%;max-width:480px;height:100%;overflow:hidden;background:#648c7a}
+canvas{display:block;width:100%;height:100%}
+#tb{position:absolute;top:0;left:0;right:0;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;z-index:15}
+.hp{background:rgba(20,20,20,.7);border:2px solid rgba(255,255,255,.25);color:#fff;padding:6px 14px;border-radius:20px;font-size:13px;font-weight:bold;display:flex;align-items:center;gap:7px}
+#bi{width:14px;height:14px;border-radius:50%;background:#fff;border:1.5px solid #111}
+#sb{position:absolute;top:52px;left:50%;transform:translateX(-50%);font-size:46px;font-weight:900;color:#fff;text-shadow:0 4px 0 #5a3818;z-index:14;pointer-events:none}
+#snd{width:38px;height:38px;border-radius:50%;background:rgba(20,20,20,.7);border:2px solid rgba(255,255,255,.4);color:#fff;font-size:18px}
+.ov{position:absolute;inset:0;background:rgba(24,19,14,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:22px;z-index:99;color:#fff}
+.hd{display:none!important}
+.tl{font-size:34px;font-weight:900;color:#ffcc33;text-shadow:0 4px 0 #8a3b08;margin-bottom:8px}
+.st{font-size:14px;line-height:1.7;color:#f1e6d2;max-width:320px;margin-bottom:20px}
+.btn{width:100%;max-width:280px;padding:14px;border:none;border-radius:14px;font-size:16px;font-weight:bold;margin-bottom:11px;box-shadow:0 5px 0 rgba(0,0,0,.4)}
+.bp{background:#ff8c00;color:#fff;border:2px solid #ffd166}
+.br{background:#f1c40f;color:#2c1e05;border:2px solid #fff3b0}
+.bv{background:#2ec4b6;color:#fff;border:2px solid #9bf6ff}
+.bs{background:#3a86ff;color:#fff;border:2px solid #90dbf4}
+.bb{background:rgba(255,255,255,.2);color:#fff;border:1.5px solid rgba(255,255,255,.4);margin-top:10px}
+.sc{background:rgba(255,255,255,.1);border:2px solid rgba(255,204,51,.4);border-radius:16px;padding:14px 20px;width:100%;max-width:280px;margin-bottom:16px}
+.sl{display:flex;justify-content:space-between;font-size:15px;margin:6px 0}
+#lb{width:100%;max-width:350px;max-height:58vh;overflow-y:auto;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,204,51,.35);border-radius:16px;padding:8px}
+.rr{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;margin-bottom:6px;background:rgba(0,0,0,.4);border-radius:12px}
+.rr.me{background:rgba(255,159,28,.32);border:1.5px solid #ff9f1c}
+.rl{display:flex;align-items:center;gap:8px;overflow:hidden}
+.rn{min-width:28px;font-size:14px;font-weight:900;color:#ffd166}
+.ra{width:36px;height:36px;border-radius:50%;object-fit:cover;background:#4a3520;border:2px solid #ffcc33;display:flex;align-items:center;justify-content:center;font-weight:bold;color:#fff;flex-shrink:0}
+.ri{text-align:right;overflow:hidden}
+.rnm{font-size:13px;font-weight:bold;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:135px}
+.rb{font-size:11px;color:#d8c8b4}
+.rs{background:rgba(255,204,51,.15);border:1px solid rgba(255,204,51,.35);padding:4px 9px;border-radius:10px;text-align:center}
+.rsv{font-size:15px;font-weight:900;color:#ffcc33;display:block}
+.rsl{font-size:9px;color:#f1e6d2}
+#ub{background:rgba(255,255,255,.12);padding:6px 14px;border-radius:20px;margin-bottom:14px;font-size:13px;color:#ffd166}
+#ts{position:absolute;top:65px;left:50%;transform:translateX(-50%);background:#27ae60;color:#fff;padding:10px 18px;border-radius:20px;font-size:13px;font-weight:bold;white-space:nowrap;z-index:150;opacity:0;transition:opacity .25s;pointer-events:none}
+</style>
 </head>
 <body>
-  <div id="game-wrapper">
-    <div id="toast">متن چالش کپی شد! در بله برای دوستانت بفرست ✅</div>
+<div id="w">
+<div id="ts">متن چالش کپی شد! ✅</div>
+<div id="tb"><div class="hp"><span id="bi"></span><span id="bt">کمربند سفید</span></div><button id="snd" onclick="tgSnd()">🔊</button></div>
+<div id="sb">0</div>
+<canvas id="c"></canvas>
+<div id="s1" class="ov">
+<div class="tl">🥋 کیدو کاراته</div>
+<div id="ub">🥋 مبارز آماده</div>
+<p class="st">به چپ و راست صفحه ضربه بزن تا تنه درخت را خرد کنی و در لیگ ماهانه اول شو!</p>
+<button class="btn bp" onclick="go()">شروع مبارزه 🔥</button>
+<button class="btn br" onclick="rk()">🏆 جدول قهرمانان ماه</button>
+</div>
+<div id="s2" class="ov hd">
+<div class="tl" style="color:#ff595e">ضربه خوردی!</div>
+<div class="sc">
+<div class="sl"><span>امتیاز این دور:</span><strong id="fs">0</strong></div>
+<div class="sl"><span>رکورد این ماه:</span><strong id="bs">0</strong></div>
+<div class="sl"><span>کمربند:</span><strong id="fb">سفید</strong></div>
+</div>
+<button id="rv" class="btn bv" onclick="rv()">❤️ شانس مجدد</button>
+<button class="btn br" onclick="rk()">🏆 جدول قهرمانان ماه</button>
+<button class="btn bs" onclick="sh()">🚀 ارسال چالش</button>
+<button class="btn bp" onclick="go()">بازی مجدد 🔄</button>
+</div>
+<div id="s3" class="ov hd">
+<div class="tl" style="font-size:26px">🏆 برترین‌های این ماه</div>
+<div id="lb"></div>
+<button class="btn bb" onclick="document.getElementById('s3').classList.add('hd')">بازگشت</button>
+</div>
+</div>
+<script>
+const DB="https://kido-db.mohammadahmadi0007.workers.dev";
+const mk=()=>{const d=new Date();return"league_"+d.getFullYear()+"_"+String(d.getMonth()+1).padStart(2,"0")};
+let usr={id:localStorage.getItem("kid")||("g_"+Math.floor(1e5+Math.random()*9e5)),name:"مبارز مهمان",photo:""};
+localStorage.setItem("kid",usr.id);
+try{
+const raw=(location.hash||"")+"&"+(location.search||"");
+const m=raw.match(/(?:tgWebAppData|baleWebAppData)=([^&]+)/);
+if(m&&m[1]){const u=JSON.parse(new URLSearchParams(decodeURIComponent(m[1])).get("user"));if(u&&u.id){usr.id="bale_"+u.id;usr.name=[u.first_name,u.last_name].filter(Boolean).join(" ")||u.username||"کاربر بله";usr.photo=u.photo_url||""}}
+if(window.Bale&&Bale.WebApp){Bale.WebApp.ready();Bale.WebApp.expand();const u=Bale.WebApp.initDataUnsafe&&Bale.WebApp.initDataUnsafe.user;if(u&&u.id){usr.id="bale_"+u.id;usr.name=[u.first_name,u.last_name].filter(Boolean).join(" ")||u.username||"کاربر بله";usr.photo=u.photo_url||""}}
+}catch(e){}
+document.getElementById("ub").innerText="🥋 مبارز: "+usr.name;
 
-    <div id="top-bar">
-      <div class="hud-pill">
-        <span id="belt-indicator"></span>
-        <span id="belt-text">کمربند سفید</span>
-      </div>
-      <button type="button" id="sound-btn">🔊</button>
-    </div>
+async function sv(sc,bl){
+if(sc<=0)return;
+const u=DB+"/"+mk()+"/"+usr.id+".json";
+try{const r=await fetch(u),ex=await r.json();if(ex&&ex.score>=sc)return;
+await fetch(u,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:usr.name,photo:usr.photo,score:sc,belt:bl,updatedAt:Date.now()})})}catch(e){}
+}
 
-    <div id="score-big">0</div>
-    <canvas id="gameCanvas"></canvas>
+async function rk(){
+const box=document.getElementById("lb");
+box.innerHTML='<div style="padding:20px">در حال دریافت رتبه‌ها...</div>';
+document.getElementById("s3").classList.remove("hd");
+try{
+const r=await fetch(DB+"/"+mk()+".json"),d=await r.json();
+if(!d){box.innerHTML='<div style="padding:20px;color:#ffd166">هنوز رکوردی ثبت نشده!</div>';return}
+const list=Object.keys(d).map(k=>({uid:k,...d[k]})).sort((a,b)=>b.score-a.score||(a.updatedAt||9e15)-(b.updatedAt||9e15));
+let cr=1;list.forEach((x,i)=>{if(i>0&&x.score<list[i-1].score)cr=i+1;x.rank=cr});
+const row=(x,me)=>{
+const bg=x.rank===1?"🥇":x.rank===2?"🥈":x.rank===3?"🥉":"#"+x.rank;
+const fl=(x.name||"ک").charAt(0);
+const av=x.photo?'<img class="ra" src="'+x.photo+'" onerror="this.style.display=\'none\'">':'<div class="ra">'+fl+'</div>';
+return'<div class="rr '+(me?"me":"")+'"><div class="rl"><div class="rn">'+bg+'</div>'+av+'<div class="ri"><div class="rnm">'+(x.name||"بازیکن")+'</div><div class="rb">کمربند '+(x.belt||"سفید")+'</div></div></div><div class="rs"><span class="rsv">'+x.score+'</span><span class="rsl">امتیاز</span></div></div>';
+};
+let h=list.slice(0,20).map(x=>row(x,x.uid===usr.id)).join("");
+const mi=list.findIndex(x=>x.uid===usr.id);
+if(mi>=20)h+='<div style="color:#ffd166;font-size:12px;margin:8px 0">••• جایگاه شما •••</div>'+row(list[mi],true);
+box.innerHTML=h;
+}catch(e){box.innerHTML='<div style="padding:20px;color:#ff6b6b">خطا در دریافت جدول</div>'}
+}
 
-    <!-- صفحه شروع -->
-    <div id="start-screen" class="overlay">
-      <div class="title-logo">🥋 کیدو کاراته</div>
-      <div id="user-badge">🥋 آماده مبارزه</div>
-      <p class="subtitle">
-        به چپ و راست صفحه ضربه بزن تا تنه درخت را خرد کنی!<br>
-        مراقب شاخه‌های چوبی بالای سرت باش و در لیگ ماهانه اول شو.
-      </p>
-      <button type="button" id="btn-start-main" class="btn btn-play">شروع مبارزه 🔥</button>
-      <button type="button" id="btn-rank-main" class="btn btn-rank">🏆 جدول قهرمانان ماه</button>
-    </div>
+const cv=document.getElementById("c"),ctx=cv.getContext("2d");
+let W=0,H=0;const rsz=()=>{const w=document.getElementById("w");W=cv.width=w.clientWidth;H=cv.height=w.clientHeight};
+window.addEventListener("resize",rsz);rsz();
 
-    <!-- صفحه باخت -->
-    <div id="gameover-screen" class="overlay hidden">
-      <div class="title-logo" style="color:#ff595e;">ضربه خوردی!</div>
-      <div class="stats-card">
-        <div class="stat-line"><span>امتیاز این دور:</span><strong id="final-score">0</strong></div>
-        <div class="stat-line"><span>رکورد این ماه تو:</span><strong id="best-score">0</strong></div>
-        <div class="stat-line"><span>درجه کمربند:</span><strong id="final-belt">سفید</strong></div>
-      </div>
-      <button type="button" id="revive-btn" class="btn btn-revive">❤️ ادامه بازی (شانس مجدد)</button>
-      <button type="button" id="btn-rank-over" class="btn btn-rank">🏆 جدول قهرمانان ماه</button>
-      <button type="button" id="btn-share-over" class="btn btn-share">🚀 ارسال چالش به دوستان</button>
-      <button type="button" id="btn-restart-over" class="btn btn-play">بازی مجدد 🔄</button>
-    </div>
+let snd=true,actx=null;
+function tgSnd(){snd=!snd;document.getElementById("snd").innerText=snd?"🔊":"🔇"}
+function beep(f1,f2,t,tp){if(!snd)return;try{if(!actx)actx=new(window.AudioContext||webkitAudioContext)();if(actx.state==="suspended")actx.resume();const n=actx.currentTime,o=actx.createOscillator(),g=actx.createGain();o.type=tp;o.frequency.setValueAtTime(f1,n);o.frequency.exponentialRampToValueAtTime(f2,n+t);g.gain.setValueAtTime(.4,n);g.gain.exponentialRampToValueAtTime(.01,n+t);o.connect(g);g.connect(actx.destination);o.start(n);o.stop(n+t)}catch(e){}}
 
-    <!-- صفحه جدول رنکینگ ماهانه -->
-    <div id="leaderboard-screen" class="overlay hidden">
-      <div class="title-logo" style="font-size:26px;">🏆 برترین‌های این ماه</div>
-      <p style="font-size:12px; color:#d8c8b4; margin-top:0; margin-bottom:12px;">
-        ۲۰ قهرمان برتر ماه + جایگاه و امتیاز فعلی شما
-      </p>
-      <div id="leaderboard-box">
-        <div style="padding:20px; color:#ddd;">در حال دریافت رتبه‌ها...</div>
-      </div>
-      <button type="button" id="btn-close-rank" class="btn btn-back">بازگشت</button>
-    </div>
-  </div>
+const belts=[{m:0,n:"سفید",c:"#fff"},{m:25,n:"زرد",c:"#f1c40f"},{m:60,n:"سبز",c:"#2ecc71"},{m:100,n:"آبی",c:"#3498db"},{m:150,n:"قرمز",c:"#e74c3c"},{m:220,n:"مشکی",c:"#1a1a1a"}];
+const bkey="kb_"+mk();
+let logs=[],side="left",pt=0,score=0,best=parseInt(localStorage.getItem(bkey)||"0",10),tm=100,play=false,usedRv=false,shk=0,fly=[],spl=[];
 
-  <script>
-    const DB_URL = "https://kido-db.mohammadahmadi0007.workers.dev";
+function gBelt(){let c=belts[0];for(const b of belts)if(score>=b.m)c=b;document.getElementById("bt").innerText="کمربند "+c.n;document.getElementById("bi").style.background=c.c;return c}
+function pLog(){const p=logs[logs.length-1];if(p!=="none")logs.push("none");else{const r=Math.random();logs.push(r<.42?"left":r<.84?"right":"none")}}
+function go(){score=0;tm=100;side="left";pt=0;usedRv=false;fly=[];spl=[];play=true;document.getElementById("sb").innerText="0";["s1","s2","s3"].forEach(i=>document.getElementById(i).classList.add("hd"));document.getElementById("rv").classList.remove("hd");gBelt();logs=["none","none","none"];for(let i=0;i<12;i++)pLog()}
+function rv(){if(usedRv)return;usedRv=true;logs[0]=logs[1]="none";tm=85;play=true;document.getElementById("s2").classList.add("hd")}
 
-    function getCurrentMonthKey() {
-      const d = new Date();
-      return "league_" + d.getFullYear() + "_" + String(d.getMonth() + 1).padStart(2, "0
+function tap(s){
+if(!play)return;side=s;pt=7;
+const gy=H*.78,tw=Math.min(82,W*.2),sh=74;
+if(logs[0]===side){over();return}
+const cb=logs.shift();pLog();
+const d=s==="left"?1:-1;
+fly.push({x:W/2,y:gy-sh/2,vx:d*8,vy:-6,r:0,vr:d*.2,b:cb,w:tw,h:sh});
+for(let i=0;i<8;i++)spl.push({x:W/2+(s==="left"?-tw/2:tw/2),y:gy-sh*.5,vx:(Math.random()-.5)*10+d*3,vy:-3-Math.random()*6,sz:5,c:i%2?"#7a441e":"#d49b54",l:1});
+beep(165,42,.11,"triangle");shk=4;
+if(logs[0]===side){over();return}
+score++;document.getElementById("sb").innerText=score;tm=Math.min(100,tm+5.8);gBelt();
+}
+
+function over(){
+play=false;shk=10;beep(130,48,.35,"sawtooth");
+const b=gBelt();if(score>best){best=score;localStorage.setItem(bkey,best)}
+sv(score,b.n);
+document.getElementById("fs").innerText=score;document.getElementById("bs").innerText=best;document.getElementById("fb").innerText=b.n;
+if(usedRv)document.getElementById("rv").classList.add("hd");
+setTimeout(()=>document.getElementById("s2").classList.remove("hd"),300);
+}
+
+function sh(){
+const b=gBelt(),t="🥋 من در لیگ ماهانه کیدو کاراته امتیاز "+score+" و کمربند "+b.n+" گرفتم!\nhttps://ble.ir/kido_karate_bot";
+if(navigator.clipboard)navigator.clipboard.writeText(t);
+const ts=document.getElementById("ts");ts.style.opacity="1";setTimeout(()=>ts.style.opacity="0",2500);
+}
+
+function dSeg(x,y,w,h,br,idx){
+ctx.fillStyle=idx%2===0?"#854d27":"#7c4622";ctx.fillRect(x-w/2,y,w,h);
+ctx.fillStyle="#4a2711";ctx.fillRect(x-w/2,y,4,h);ctx.fillRect(x+w/2-4,y,4,h);
+if(br==="left"||br==="right"){const bw=Math.min(92,W*.23),bh=22,by=y+h*.45,bx=br==="left"?x-w/2-bw+2:x+w/2-2;ctx.fillStyle="#9c5a2b";ctx.fillRect(bx,by,bw,bh);ctx.strokeStyle="#3d1e0a";ctx.lineWidth=2.5;ctx.strokeRect(bx,by,bw,bh)}
+}
+
+let lt=performance.now();
+function loop(now){
+const dt=(now-lt)/1000;lt=now;
+if(play){tm-=(14+Math.min(score*.14,26))*dt;if(tm<=0){tm=0;over()}}
+ctx.save();if(shk>0){ctx.translate((Math.random()-.5)*8,(Math.random()-.5)*8);shk--}
+const gy=H*.78,tw=Math.min(82,W*.2),sh=74;
+const sg=ctx.createLinearGradient(0,0,0,gy);sg.addColorStop(0,"#5c8576");sg.addColorStop(.5,"#9bb38d");sg.addColorStop(1,"#e5b869");ctx.fillStyle=sg;ctx.fillRect(0,0,W,gy);
+const sr=Math.min(W*.36,155);ctx.fillStyle="#f28c38";ctx.beginPath();ctx.arc(W/2,gy-sr*.45,sr,0,Math.PI*2);ctx.fill();
+ctx.fillStyle="#c48f3b";ctx.fillRect(0,gy,W,H-gy);
+for(let i=0;i<logs.length;i++){const sy=gy-(i+1)*sh;if(sy+sh<0)break;dSeg(W/2,sy,tw,sh,logs[i],i)}
+for(let i=fly.length-1;i>=0;i--){const f=fly[i];f.x+=f.vx;f.y+=f.vy;f.vy+=.65;f.r+=f.vr;ctx.save();ctx.translate(f.x,f.y);ctx.rotate(f.r);dSeg(0,-f.h/2,f.w,f.h,f.b,0);ctx.restore();if(f.y>H+100)fly.splice(i,1)}
+for(let i=spl.length-1;i>=0;i--){const p=spl[i];p.x+=p.vx;p.y+=p.vy;p.vy+=.45;p.l-=.04;ctx.fillStyle=p.c;ctx.globalAlpha=Math.max(0,p.l);ctx.fillRect(p.x,p.y,p.sz,p.sz*.6);ctx.globalAlpha=1;if(p.l<=0)spl.splice(i,1)}
+const b=gBelt(),off=tw/2+44,cx=side==="left"?W/2-off:W/2+off,dir=side==="left"?1:-1;
+ctx.save();ctx.translate(cx,gy);ctx.scale(dir,1);const ip=pt>0;if(pt>0)pt--;ctx.strokeStyle="#1c1c1c";ctx.lineWidth=2.5;
+ctx.fillStyle="#fff";ctx.fillRect(-14,-64,28,34);ctx.strokeRect(-14,-64,28,34);
+ctx.fillStyle=b.c;ctx.fillRect(-16,-38,32,7);ctx.strokeRect(-16,-38,32,7);
+ctx.fillStyle="#f5bd8c";ctx.fillRect(-13,-92,26,28);ctx.strokeRect(-13,-92,26,28);
+ctx.fillStyle="#181818";ctx.fillRect(-15,-96,30,8);ctx.fillRect(2,-83,9,3.5);
+const rch=ip?36:18;ctx.fillStyle="#fff";ctx.fillRect(6,-58,rch,11);ctx.strokeRect(6,-58,rch,11);
+ctx.fillStyle="#f5bd8c";ctx.fillRect(6+rch,-59,10,13);ctx.strokeRect(6+rch,-59,10,13);ctx.restore();
+const bw=Math.min(210,W*.52),bx=(W-bw)/2;ctx.fillStyle="rgba(255,255,255,.35)";ctx.fillRect(bx,112,bw,16);ctx.fillStyle=tm<30?"#ff2a2a":"#d92b2b";ctx.fillRect(bx,112,bw*(tm/100),16);ctx.strokeStyle="#3b2313";ctx.strokeRect(bx,112,bw,16);
+ctx.restore();requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+document.getElementById("w").addEventListener("pointerdown",e=>{if(e.target.closest("button")||!play)return;e.preventDefault();const r=e.currentTarget.getBoundingClientRect();tap(e.clientX-r.left<r.width/2?"left":"right")});
+window.addEventListener("keydown",e=>{if(play&&(e.key==="ArrowLeft"||e.key==="ArrowRight"))tap(e.key==="ArrowLeft"?"left":"right")});
+</script>
+</body>
+</html>
