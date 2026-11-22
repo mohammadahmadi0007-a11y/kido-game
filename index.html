@@ -92,6 +92,7 @@ canvas{display:block;width:100%;height:100%}
 <p class="st">به چپ و راست ضربه بزن، یخ‌ها را بشکن، قلب‌های انرژی را برای افزایش زمان بگیر و کمربندت را ارتقا بده!</p>
 <button class="btn bp" onclick="go()">شروع مبارزه 🔥</button>
 <button class="btn br" onclick="rk()">🏆 جدول قهرمانان ماه</button>
+<button class="btn bs" onclick="inv()">📤 ارسال به دوست</button>
 <div class="brand-tag" onclick="openCh()">🎮 اختصاصی کانال <b>@gamee_balee</b></div>
 </div>
 
@@ -125,6 +126,34 @@ const BOT_URL="https://ble.ir/kido_karate_bot";
 function openCh(){
 if(window.Bale&&Bale.WebApp&&Bale.WebApp.openLink)Bale.WebApp.openLink(CH_URL);
 else window.open(CH_URL,"_blank");
+}
+
+function forwardToBale(txt){
+const shareUrl=`https://ble.ir/share/url?url=${encodeURIComponent(BOT_URL)}&text=${encodeURIComponent(txt)}`;
+const ts=document.getElementById("ts");
+ts.innerText="در حال باز کردن صفحه فوروارد... 🚀";
+ts.style.opacity="1";
+setTimeout(()=>ts.style.opacity="0",2000);
+if(window.Bale&&Bale.WebApp&&Bale.WebApp.openLink){
+Bale.WebApp.openLink(shareUrl);
+}else if(navigator.share){
+navigator.share({title:"کیدو کاراته",text:txt,url:BOT_URL}).catch(()=>{});
+}else{
+window.open(shareUrl,"_blank");
+}
+}
+
+// ارسال مستقیم بازی به دوست از منوی اصلی
+function inv(){
+const txt=`🥋 بیا بازی جذاب «کیدو کاراته» رو بازی کن و رکورد بزن! 🔥\nکانال ما: @gamee_balee`;
+forwardToBale(txt);
+}
+
+// ارسال رکورد و چالش بعد از پایان بازی
+function sh(){
+const b=getBeltObj();
+const txt=`🥋 من در لیگ ماهانه کیدو کاراته امتیاز ${score} و کمربند ${b.n} گرفتم! می‌تونی رکورد منو بزنی؟ 🔥\nکانال ما: @gamee_balee`;
+forwardToBale(txt);
 }
 
 const mk=()=>{const d=new Date();return"league_"+d.getFullYear()+"_"+String(d.getMonth()+1).padStart(2,"0")};
@@ -463,24 +492,6 @@ document.getElementById("fs").innerText=score;
 document.getElementById("bs").innerText=best;
 document.getElementById("fb").innerText=b.n;
 setTimeout(()=>document.getElementById("s2").classList.remove("hd"),950);
-}
-
-// فوروارد مستقیم چالش به دوستان در بله (به جای کپی کردن)
-function sh(){
-const b=getBeltObj();
-const txt=`🥋 من در لیگ ماهانه کیدو کاراته امتیاز ${score} و کمربند ${b.n} گرفتم! می‌تونی رکورد منو بزنی؟ 🔥\nکانال ما: @gamee_balee`;
-const shareUrl=`https://ble.ir/share/url?url=${encodeURIComponent(BOT_URL)}&text=${encodeURIComponent(txt)}`;
-const ts=document.getElementById("ts");
-ts.innerText="در حال باز کردن صفحه فوروارد... 🚀";
-ts.style.opacity="1";
-setTimeout(()=>ts.style.opacity="0",2000);
-if(window.Bale&&Bale.WebApp&&Bale.WebApp.openLink){
-Bale.WebApp.openLink(shareUrl);
-}else if(navigator.share){
-navigator.share({title:"چالش کیدو کاراته",text:txt,url:BOT_URL}).catch(()=>{});
-}else{
-window.open(shareUrl,"_blank");
-}
 }
 
 function drawMiniHeart(cx,cy,r){
