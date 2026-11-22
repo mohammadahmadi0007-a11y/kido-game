@@ -11,10 +11,8 @@ canvas{display:block;width:100%;height:100%}
 
 /* نوار بالای بازی */
 #top-hdr{position:absolute;top:0;left:0;right:0;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;z-index:16;direction:ltr}
-.score-grp{display:flex;align-items:center;gap:10px}
 .score-lbl{font-size:17px;font-weight:900;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,.6)}
 .score-lbl span{color:#ffd166;margin-left:4px}
-#lives-box{background:rgba(20,15,30,.65);border:1.5px solid rgba(255,255,255,.3);border-radius:14px;padding:3px 9px;font-size:13px;font-weight:900;color:#ff4d6d;display:flex;align-items:center;gap:3px}
 .top-btns{display:flex;gap:8px;align-items:center}
 .ico-btn{width:36px;height:36px;border-radius:50%;background:rgba(20,15,30,.65);border:2px solid rgba(255,255,255,.35);color:#fff;font-size:16px;display:flex;justify-content:center;align-items:center;cursor:pointer}
 .ico-btn:active{transform:scale(.92)}
@@ -64,12 +62,9 @@ canvas{display:block;width:100%;height:100%}
 <div id="w">
 <div id="ts">متن چالش کپی شد! ✅</div>
 
-<!-- هدر امتیاز، جان اضافه و صدا -->
+<!-- هدر امتیاز و صدا -->
 <div id="top-hdr">
-<div class="score-grp">
 <div class="score-lbl">Score: <span id="sb">0</span></div>
-<div id="lives-box" class="hd">❤️ <span id="lv-cnt">0</span></div>
-</div>
 <div class="top-btns">
 <button class="ico-btn" id="snd" onclick="tgSnd()">🔊</button>
 <button class="ico-btn" id="ps-btn" onclick="tgPause()">⏸</button>
@@ -94,7 +89,7 @@ canvas{display:block;width:100%;height:100%}
 <div id="s1" class="ov">
 <div class="tl">🥋 کیدو کاراته</div>
 <div id="ub">🥋 مبارز آماده</div>
-<p class="st">به چپ و راست ضربه بزن، یخ‌ها را بشکن، در مراحل بالاتر قلب جان اضافه بگیر و کمربندت را ارتقا بده!</p>
+<p class="st">به چپ و راست ضربه بزن، یخ‌ها را بشکن، قلب‌های انرژی را برای افزایش زمان بگیر و کمربندت را ارتقا بده!</p>
 <button class="btn bp" onclick="go()">شروع مبارزه 🔥</button>
 <button class="btn br" onclick="rk()">🏆 جدول قهرمانان ماه</button>
 <div class="brand-tag" onclick="openCh()">🎮 اختصاصی کانال <b>@gamee_balee</b></div>
@@ -283,16 +278,10 @@ const belts=[
 
 const bkey="kb_"+mk();
 let logs=[],side="left",pt=0,score=0,chops=0,best=parseInt(localStorage.getItem(bkey)||"0",10);
-let tm=100,play=false,paused=false,shk=0,ko=false,extraLives=0;
-let generatedCount=0,nextHeartChop=100;
+let tm=100,play=false,paused=false,shk=0,ko=false;
+let generatedCount=0,nextHeartChop=85;
 let fly=[],spl=[],popups=[],leaves=[];
 let levelUpAnim=0,levelUpBelt=belts[1],levelUpMult="1.1X",bannerText="",bannerTimer=0;
-
-function updLivesUI(){
-const box=document.getElementById("lives-box");
-document.getElementById("lv-cnt").innerText=extraLives;
-box.classList.toggle("hd",extraLives<=0);
-}
 
 for(let i=0;i<18;i++){
 leaves.push({
@@ -327,22 +316,21 @@ br=r<0.43?"left":r<0.86?"right":"none";
 const hasIce=(br==="none"&&generatedCount>18&&Math.random()<0.14);
 let hasHeart=false;
 
-// قلب جان اضافه فقط بعد از ضربه ۱۰۰ام و با فاصله خیلی زیاد (حداقل ۸۵ تا ۱۳۰ ضربه فاصله) و سقف ۲ قلب ظاهر می‌شود
-if(br!=="none"&&!hasIce&&generatedCount>=nextHeartChop&&extraLives<2&&Math.random()<0.015){
+// قلب افزایش زمان با فاصله زیاد بین شاخه‌ها (حداقل ۷۵ تا ۱۲۰ ضربه فاصله) ظاهر می‌شود
+if(br!=="none"&&!hasIce&&generatedCount>=nextHeartChop&&Math.random()<0.025){
 hasHeart=true;
-nextHeartChop=generatedCount+85+Math.floor(Math.random()*45);
+nextHeartChop=generatedCount+75+Math.floor(Math.random()*45);
 }
 
 logs.push({br,ice:hasIce?2:0,heart:hasHeart});
 }
 
 function go(){
-score=0;chops=0;tm=100;side="left";pt=0;ko=false;paused=false;extraLives=0;
-generatedCount=0;nextHeartChop=100+Math.floor(Math.random()*35);
+score=0;chops=0;tm=100;side="left";pt=0;ko=false;paused=false;
+generatedCount=0;nextHeartChop=80+Math.floor(Math.random()*35);
 levelUpAnim=0;bannerTimer=0;
 fly=[];spl=[];popups=[];
 play=true;
-updLivesUI();
 document.getElementById("ps-btn").innerText="⏸";
 document.getElementById("sb").innerText="0";
 document.getElementById("mult-txt").innerText="1X";
@@ -362,27 +350,14 @@ function addPopup(x,y,txt,col="#ffffff",big=false){
 popups.push({x,y,txt,col,big,vy:-2.4,life:1});
 }
 
-function consumeExtraLife(){
-extraLives--;
-updLivesUI();
-shk=8;
-playHeartSound();
-bannerText="SAVED! ❤️";
-bannerTimer=1.2;
-addPopup(W/2,H*0.68,"جان اضافه مصرف شد ❤️","#ff4d6d",true);
-logs[0]={br:"none",ice:0,heart:false};
-logs[1]={br:"none",ice:0,heart:false};
-tm=Math.max(tm,55);
-}
-
 function tap(s){
 if(!play||paused||levelUpAnim>0)return;
 side=s;
 pt=7;
 const gy=H*0.80,tw=Math.min(76,W*0.19),sh=70;
 
+// برخورد به شاخه همیشه منجر به باخت می‌شود
 if(logs[0].br===side){
-if(extraLives>0){consumeExtraLife();return;}
 over();
 return;
 }
@@ -444,17 +419,16 @@ l:1
 fly.push({x:W/2,y:gy-sh/2,vx:d*8.5,vy:-6.2,r:0,vr:d*0.22,b:popped.br,w:tw,h:sh,ice:wasIce});
 shk=4;
 
-// گرفتن قلب جان اضافه ❤️ اگر پایین آمده و بازیکن در همان سمت باشد
+// گرفتن قلب ❤️ فقط مقدار قابل توجهی (+۴۰٪) به نوار زمان اضافه می‌کند
 if(logs[0].heart&&logs[0].br!==side){
 logs[0].heart=false;
-extraLives=Math.min(2,extraLives+1);
-updLivesUI();
+tm=Math.min(100,tm+40);
 playHeartSound();
-addPopup(W/2+(side==="left"?-45:45),gy-sh*1.4,"+1 LIFE ❤️","#ff4d6d",true);
+addPopup(W/2+(side==="left"?-45:45),gy-sh*1.4,"+TIME ❤️","#ff4d6d",true);
 }
 
+// اگر بعد از سقوط تنه، شاخه جدید روی سر بازیکن افتاد
 if(logs[0].br===side){
-if(extraLives>0){consumeExtraLife();return;}
 over();
 return;
 }
@@ -539,7 +513,7 @@ ctx.strokeStyle="#4a250b";
 ctx.lineWidth=2;
 ctx.strokeRect(bx,by,bw,bh);
 
-// مدال قلب جان اضافه آویزان زیر شاخه
+// مدال قلب افزایش زمان آویزان زیر شاخه
 if(seg.heart){
 const cx=seg.br==="left"?bx+bw*0.38:bx+bw*0.62;
 const cy=by+bh+18;
@@ -675,11 +649,7 @@ levelUpAnim-=dt;
 tm-=(14+Math.min(chops*0.11,24))*dt;
 document.getElementById("tm-bar").style.width=Math.max(0,tm)+"%";
 if(tm<=0){
-if(extraLives>0){
-consumeExtraLife();
-}else{
 tm=0;over();
-}
 }
 }
 }
