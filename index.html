@@ -60,7 +60,7 @@ canvas{display:block;width:100%;height:100%}
 </head>
 <body>
 <div id="w">
-<div id="ts">متن چالش کپی شد! ✅</div>
+<div id="ts">در حال باز کردن صفحه فوروارد... 🚀</div>
 
 <!-- هدر امتیاز و صدا -->
 <div id="top-hdr">
@@ -120,6 +120,8 @@ canvas{display:block;width:100%;height:100%}
 <script>
 const DB="https://kido-db.mohammadahmadi0007.workers.dev";
 const CH_URL="https://ble.ir/gamee_balee";
+const BOT_URL="https://ble.ir/kido_karate_bot";
+
 function openCh(){
 if(window.Bale&&Bale.WebApp&&Bale.WebApp.openLink)Bale.WebApp.openLink(CH_URL);
 else window.open(CH_URL,"_blank");
@@ -316,7 +318,6 @@ br=r<0.43?"left":r<0.86?"right":"none";
 const hasIce=(br==="none"&&generatedCount>18&&Math.random()<0.14);
 let hasHeart=false;
 
-// قلب افزایش زمان با فاصله زیاد بین شاخه‌ها (حداقل ۷۵ تا ۱۲۰ ضربه فاصله) ظاهر می‌شود
 if(br!=="none"&&!hasIce&&generatedCount>=nextHeartChop&&Math.random()<0.025){
 hasHeart=true;
 nextHeartChop=generatedCount+75+Math.floor(Math.random()*45);
@@ -356,7 +357,6 @@ side=s;
 pt=7;
 const gy=H*0.80,tw=Math.min(76,W*0.19),sh=70;
 
-// برخورد به شاخه همیشه منجر به باخت می‌شود
 if(logs[0].br===side){
 over();
 return;
@@ -419,7 +419,6 @@ l:1
 fly.push({x:W/2,y:gy-sh/2,vx:d*8.5,vy:-6.2,r:0,vr:d*0.22,b:popped.br,w:tw,h:sh,ice:wasIce});
 shk=4;
 
-// گرفتن قلب ❤️ فقط مقدار قابل توجهی (+۴۰٪) به نوار زمان اضافه می‌کند
 if(logs[0].heart&&logs[0].br!==side){
 logs[0].heart=false;
 tm=Math.min(100,tm+40);
@@ -427,7 +426,6 @@ playHeartSound();
 addPopup(W/2+(side==="left"?-45:45),gy-sh*1.4,"+TIME ❤️","#ff4d6d",true);
 }
 
-// اگر بعد از سقوط تنه، شاخه جدید روی سر بازیکن افتاد
 if(logs[0].br===side){
 over();
 return;
@@ -467,11 +465,22 @@ document.getElementById("fb").innerText=b.n;
 setTimeout(()=>document.getElementById("s2").classList.remove("hd"),950);
 }
 
+// فوروارد مستقیم چالش به دوستان در بله (به جای کپی کردن)
 function sh(){
 const b=getBeltObj();
-const t="🥋 من در لیگ ماهانه کیدو کاراته امتیاز "+score+" و کمربند "+b.n+" گرفتم!\nکانال ما: @gamee_balee\nhttps://ble.ir/kido_karate_bot";
-if(navigator.clipboard)navigator.clipboard.writeText(t);
-const ts=document.getElementById("ts");ts.style.opacity="1";setTimeout(()=>ts.style.opacity="0",2500);
+const txt=`🥋 من در لیگ ماهانه کیدو کاراته امتیاز ${score} و کمربند ${b.n} گرفتم! می‌تونی رکورد منو بزنی؟ 🔥\nکانال ما: @gamee_balee`;
+const shareUrl=`https://ble.ir/share/url?url=${encodeURIComponent(BOT_URL)}&text=${encodeURIComponent(txt)}`;
+const ts=document.getElementById("ts");
+ts.innerText="در حال باز کردن صفحه فوروارد... 🚀";
+ts.style.opacity="1";
+setTimeout(()=>ts.style.opacity="0",2000);
+if(window.Bale&&Bale.WebApp&&Bale.WebApp.openLink){
+Bale.WebApp.openLink(shareUrl);
+}else if(navigator.share){
+navigator.share({title:"چالش کیدو کاراته",text:txt,url:BOT_URL}).catch(()=>{});
+}else{
+window.open(shareUrl,"_blank");
+}
 }
 
 function drawMiniHeart(cx,cy,r){
@@ -513,7 +522,6 @@ ctx.strokeStyle="#4a250b";
 ctx.lineWidth=2;
 ctx.strokeRect(bx,by,bw,bh);
 
-// مدال قلب افزایش زمان آویزان زیر شاخه
 if(seg.heart){
 const cx=seg.br==="left"?bx+bw*0.38:bx+bw*0.62;
 const cy=by+bh+18;
