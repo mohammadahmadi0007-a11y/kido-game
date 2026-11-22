@@ -11,8 +11,10 @@ canvas{display:block;width:100%;height:100%}
 
 /* نوار بالای بازی */
 #top-hdr{position:absolute;top:0;left:0;right:0;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;z-index:16;direction:ltr}
+.score-grp{display:flex;align-items:center;gap:10px}
 .score-lbl{font-size:17px;font-weight:900;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,.6)}
-.score-lbl span{color:#ffd166;margin-left:6px}
+.score-lbl span{color:#ffd166;margin-left:4px}
+#lives-box{background:rgba(20,15,30,.65);border:1.5px solid rgba(255,255,255,.3);border-radius:14px;padding:3px 9px;font-size:13px;font-weight:900;color:#ff4d6d;display:flex;align-items:center;gap:3px}
 .top-btns{display:flex;gap:8px;align-items:center}
 .ico-btn{width:36px;height:36px;border-radius:50%;background:rgba(20,15,30,.65);border:2px solid rgba(255,255,255,.35);color:#fff;font-size:16px;display:flex;justify-content:center;align-items:center;cursor:pointer}
 .ico-btn:active{transform:scale(.92)}
@@ -35,11 +37,13 @@ canvas{display:block;width:100%;height:100%}
 .btn:active{transform:translateY(2px)}
 .bp{background:linear-gradient(135deg,#ff7b00,#e63946);color:#fff;border:2px solid #ffd166}
 .br{background:#f1c40f;color:#2c1e05;border:2px solid #fff3b0}
-.bv{background:#2ec4b6;color:#fff;border:2px solid #9bf6ff}
 .bs{background:#3a86ff;color:#fff;border:2px solid #90dbf4}
 .bb{background:rgba(255,255,255,.2);color:#fff;border:1.5px solid rgba(255,255,255,.4);margin-top:10px}
 .sc{background:rgba(255,255,255,.1);border:2px solid rgba(255,204,51,.45);border-radius:16px;padding:14px 20px;width:100%;max-width:280px;margin-bottom:16px}
 .sl{display:flex;justify-content:space-between;font-size:15px;margin:6px 0}
+.brand-tag{margin-top:8px;padding:8px 16px;border-radius:20px;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,204,51,.45);font-size:12px;color:#f1e6d2;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:transform .15s}
+.brand-tag:active{transform:scale(.95)}
+.brand-tag b{color:#ffcc33;direction:ltr;font-size:13px}
 #lb{width:100%;max-width:350px;max-height:58vh;overflow-y:auto;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,204,51,.35);border-radius:16px;padding:8px}
 .rr{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;margin-bottom:6px;background:rgba(0,0,0,.4);border-radius:12px}
 .rr.me{background:rgba(255,159,28,.32);border:1.5px solid #ff9f1c}
@@ -60,16 +64,19 @@ canvas{display:block;width:100%;height:100%}
 <div id="w">
 <div id="ts">متن چالش کپی شد! ✅</div>
 
-<!-- هدر امتیاز و صدا -->
+<!-- هدر امتیاز، جان اضافه و صدا -->
 <div id="top-hdr">
+<div class="score-grp">
 <div class="score-lbl">Score: <span id="sb">0</span></div>
+<div id="lives-box" class="hd">❤️ <span id="lv-cnt">0</span></div>
+</div>
 <div class="top-btns">
 <button class="ico-btn" id="snd" onclick="tgSnd()">🔊</button>
 <button class="ico-btn" id="ps-btn" onclick="tgPause()">⏸</button>
 </div>
 </div>
 
-<!-- نوار انرژی و ضریب امتیاز -->
+<!-- نوارهای انرژی و ضریب امتیاز -->
 <div id="bars-row">
 <div class="bar-box">
 <div class="bar-track"><div class="bar-fill-l" id="tm-bar"></div></div>
@@ -87,9 +94,10 @@ canvas{display:block;width:100%;height:100%}
 <div id="s1" class="ov">
 <div class="tl">🥋 کیدو کاراته</div>
 <div id="ub">🥋 مبارز آماده</div>
-<p class="st">به چپ و راست ضربه بزن، یخ‌ها را بشکن، سکه 2X بگیر و کمربندت را ارتقا بده!</p>
+<p class="st">به چپ و راست ضربه بزن، یخ‌ها را بشکن، سکه 2X و قلب جان اضافه بگیر و کمربندت را ارتقا بده!</p>
 <button class="btn bp" onclick="go()">شروع مبارزه 🔥</button>
 <button class="btn br" onclick="rk()">🏆 جدول قهرمانان ماه</button>
+<div class="brand-tag" onclick="openCh()">🎮 اختصاصی کانال <b>@gamee_balee</b></div>
 </div>
 
 <!-- صفحه پایان بازی -->
@@ -100,10 +108,10 @@ canvas{display:block;width:100%;height:100%}
 <div class="sl"><span>رکورد این ماه:</span><strong id="bs">0</strong></div>
 <div class="sl"><span>کمربند:</span><strong id="fb">سفید</strong></div>
 </div>
-<button id="rv" class="btn bv" onclick="rv()">❤️ شانس مجدد</button>
 <button class="btn br" onclick="rk()">🏆 جدول قهرمانان ماه</button>
 <button class="btn bs" onclick="sh()">🚀 ارسال چالش</button>
 <button class="btn bp" onclick="go()">بازی مجدد 🔄</button>
+<div class="brand-tag" onclick="openCh()">🎮 اختصاصی کانال <b>@gamee_balee</b></div>
 </div>
 
 <!-- جدول رتبه‌بندی ماهانه -->
@@ -116,6 +124,12 @@ canvas{display:block;width:100%;height:100%}
 
 <script>
 const DB="https://kido-db.mohammadahmadi0007.workers.dev";
+const CH_URL="https://ble.ir/gamee_balee";
+function openCh(){
+if(window.Bale&&Bale.WebApp&&Bale.WebApp.openLink)Bale.WebApp.openLink(CH_URL);
+else window.open(CH_URL,"_blank");
+}
+
 const mk=()=>{const d=new Date();return"league_"+d.getFullYear()+"_"+String(d.getMonth()+1).padStart(2,"0")};
 let usr={id:localStorage.getItem("kid")||("g_"+Math.floor(1e5+Math.random()*9e5)),name:"مبارز مهمان",photo:""};
 localStorage.setItem("kid",usr.id);
@@ -174,7 +188,7 @@ const cv=document.getElementById("c"),ctx=cv.getContext("2d");
 let W=0,H=0;const rsz=()=>{const w=document.getElementById("w");W=cv.width=w.clientWidth;H=cv.height=w.clientHeight};
 window.addEventListener("resize",rsz);rsz();
 
-// --- موتور افکت‌های صوتی دقیق مشابه ویدیو ---
+// --- موتور افکت‌های صوتی ---
 let snd=true,actx=null;
 function tgSnd(){snd=!snd;document.getElementById("snd").innerText=snd?"🔊":"🔇"}
 function getAudio(){
@@ -186,7 +200,6 @@ return actx;
 }catch(e){return null}
 }
 
-// صدای ضربه مشت به تنه درخت (چوبی و کوبنده)
 function playChopSound(){
 const a=getAudio();if(!a)return;
 const t=a.currentTime;
@@ -200,7 +213,6 @@ o.connect(g);g.connect(a.destination);
 o.start(t);o.stop(t+0.095);
 }
 
-// صدای ترک خوردن و شکستن یخ
 function playIceCrack(shatter=false){
 const a=getAudio();if(!a)return;
 const t=a.currentTime;
@@ -217,7 +229,6 @@ o.start(t+i*0.02);o.stop(t+i*0.02+0.09);
 });
 }
 
-// صدای گرفتن سکه 2X
 function playCoin2X(){
 const a=getAudio();if(!a)return;
 const t=a.currentTime;
@@ -232,7 +243,21 @@ o.start(t+i*0.06);o.stop(t+i*0.06+0.19);
 });
 }
 
-// صدای ارتقای سطح و کمربند (LEVEL UP!)
+function playHeartSound(){
+const a=getAudio();if(!a)return;
+const t=a.currentTime;
+[659.25,880,1318.51].forEach((f,i)=>{
+const o=a.createOscillator(),g=a.createGain();
+o.type="sine";
+const st=t+i*0.065;
+o.frequency.setValueAtTime(f,st);
+g.gain.setValueAtTime(0.24,st);
+g.gain.exponentialRampToValueAtTime(0.005,st+0.22);
+o.connect(g);g.connect(a.destination);
+o.start(st);o.stop(st+0.23);
+});
+}
+
 function playLevelUpSound(){
 const a=getAudio();if(!a)return;
 const t=a.currentTime;
@@ -248,7 +273,6 @@ o.start(st);o.stop(st+0.36);
 });
 }
 
-// صدای باختن
 function playHitSound(){
 const a=getAudio();if(!a)return;
 const t=a.currentTime;
@@ -273,11 +297,16 @@ const belts=[
 
 const bkey="kb_"+mk();
 let logs=[],side="left",pt=0,score=0,chops=0,best=parseInt(localStorage.getItem(bkey)||"0",10);
-let tm=100,play=false,paused=false,usedRv=false,shk=0,ko=false;
+let tm=100,play=false,paused=false,shk=0,ko=false,extraLives=0;
 let fly=[],spl=[],popups=[],leaves=[];
 let doubleTimer=0,levelUpAnim=0,levelUpBelt=belts[1],levelUpMult="1.1X",bannerText="",bannerTimer=0;
 
-// برگ‌های معلق در هوا مثل ویدیو
+function updLivesUI(){
+const box=document.getElementById("lives-box");
+document.getElementById("lv-cnt").innerText=extraLives;
+box.classList.toggle("hd",extraLives<=0);
+}
+
 for(let i=0;i<18;i++){
 leaves.push({
 x:Math.random()*480,
@@ -308,22 +337,30 @@ const r=Math.random();
 br=r<0.43?"left":r<0.86?"right":"none";
 }
 const hasIce=(br==="none"&&chops>15&&Math.random()<0.14);
-const hasCoin=(br!=="none"&&!hasIce&&chops>10&&Math.random()<0.12);
-logs.push({br,ice:hasIce?2:0,coin:hasCoin});
+let hasCoin=false;
+let hasHeart=false;
+if(br!=="none"&&!hasIce){
+if(chops>20&&extraLives<3&&Math.random()<0.045){
+hasHeart=true;
+}else if(chops>10&&Math.random()<0.11){
+hasCoin=true;
+}
+}
+logs.push({br,ice:hasIce?2:0,coin:hasCoin,heart:hasHeart});
 }
 
 function go(){
-score=0;chops=0;tm=100;side="left";pt=0;usedRv=false;ko=false;paused=false;
+score=0;chops=0;tm=100;side="left";pt=0;ko=false;paused=false;extraLives=0;
 doubleTimer=0;levelUpAnim=0;bannerTimer=0;
 fly=[];spl=[];popups=[];
 play=true;
+updLivesUI();
 document.getElementById("ps-btn").innerText="⏸";
 document.getElementById("sb").innerText="0";
 document.getElementById("mult-txt").innerText="1X";
 document.getElementById("lv-bar").style.width="0%";
 ["s1","s2","s3"].forEach(i=>document.getElementById(i).classList.add("hd"));
-document.getElementById("rv").classList.remove("hd");
-logs=[{br:"none",ice:0,coin:false},{br:"none",ice:0,coin:false},{br:"none",ice:0,coin:false}];
+logs=[{br:"none",ice:0,coin:false,heart:false},{br:"none",ice:0,coin:false,heart:false},{br:"none",ice:0,coin:false,heart:false}];
 for(let i=0;i<14;i++)pLog();
 }
 
@@ -333,17 +370,21 @@ paused=!paused;
 document.getElementById("ps-btn").innerText=paused?"▶️":"⏸";
 }
 
-function rv(){
-if(usedRv)return;
-usedRv=true;ko=false;
-logs[0]={br:"none",ice:0,coin:false};
-logs[1]={br:"none",ice:0,coin:false};
-tm=85;play=true;
-document.getElementById("s2").classList.add("hd");
-}
-
 function addPopup(x,y,txt,col="#ffffff",big=false){
 popups.push({x,y,txt,col,big,vy:-2.4,life:1});
+}
+
+function consumeExtraLife(){
+extraLives--;
+updLivesUI();
+shk=8;
+playHeartSound();
+bannerText="SAVED! ❤️";
+bannerTimer=1.2;
+addPopup(W/2,H*0.68,"جان اضافه مصرف شد ❤️","#ff4d6d",true);
+logs[0]={br:"none",ice:0,coin:false,heart:false};
+logs[1]={br:"none",ice:0,coin:false,heart:false};
+tm=Math.max(tm,55);
 }
 
 function tap(s){
@@ -353,6 +394,7 @@ pt=7;
 const gy=H*0.80,tw=Math.min(76,W*0.19),sh=70;
 
 if(logs[0].br===side){
+if(extraLives>0){consumeExtraLife();return;}
 over();
 return;
 }
@@ -360,7 +402,6 @@ return;
 const cur=logs[0];
 const d=s==="left"?1:-1;
 
-// اگر قطعه فعلی یخ دارد (۲ ضربه‌ای است)
 if(cur.ice>1){
 cur.ice--;
 playIceCrack(false);
@@ -380,7 +421,6 @@ tm=Math.min(100,tm+3);
 return;
 }
 
-// قطعه خرد و پرتاب می‌شود
 const wasIce=(cur.ice===1);
 const popped=logs.shift();
 pLog();
@@ -416,7 +456,14 @@ l:1
 fly.push({x:W/2,y:gy-sh/2,vx:d*8.5,vy:-6.2,r:0,vr:d*0.22,b:popped.br,w:tw,h:sh,ice:wasIce});
 shk=4;
 
-// بررسی گرفتن سکه 2X روی شاخه‌ای که الان پایین آمد
+if(logs[0].heart&&logs[0].br!==side){
+logs[0].heart=false;
+extraLives=Math.min(3,extraLives+1);
+updLivesUI();
+playHeartSound();
+addPopup(W/2+(side==="left"?-45:45),gy-sh*1.4,"+1 LIFE ❤️","#ff4d6d",true);
+}
+
 if(logs[0].coin&&logs[0].br!==side){
 logs[0].coin=false;
 doubleTimer=6.0;
@@ -425,8 +472,8 @@ bannerTimer=1.6;
 playCoin2X();
 }
 
-// اگر بعد از سقوط تنه، شاخه جدید روی سر بازیکن افتاد
 if(logs[0].br===side){
+if(extraLives>0){consumeExtraLife();return;}
 over();
 return;
 }
@@ -444,7 +491,6 @@ tm=Math.min(100,tm+5.8);
 const prog=(chops%100);
 document.getElementById("lv-bar").style.width=prog+"%";
 
-// انیمیشن LEVEL UP در هر ۱۰۰ ضربه (مثل ویدیو)
 if(chops>0&&chops%100===0){
 levelUpBelt=getBeltObj();
 levelUpMult=getMult()+"X";
@@ -464,20 +510,33 @@ if(score>best){best=score;localStorage.setItem(bkey,best);sv(score,b.n);}
 document.getElementById("fs").innerText=score;
 document.getElementById("bs").innerText=best;
 document.getElementById("fb").innerText=b.n;
-if(usedRv)document.getElementById("rv").classList.add("hd");
 setTimeout(()=>document.getElementById("s2").classList.remove("hd"),950);
 }
 
 function sh(){
 const b=getBeltObj();
-const t="🥋 من در لیگ ماهانه کیدو کاراته امتیاز "+score+" و کمربند "+b.n+" گرفتم!\nhttps://ble.ir/kido_karate_bot";
+const t="🥋 من در لیگ ماهانه کیدو کاراته امتیاز "+score+" و کمربند "+b.n+" گرفتم!\nکانال ما: @gamee_balee\nhttps://ble.ir/kido_karate_bot";
 if(navigator.clipboard)navigator.clipboard.writeText(t);
 const ts=document.getElementById("ts");ts.style.opacity="1";setTimeout(()=>ts.style.opacity="0",2500);
 }
 
-// رسم یک قطعه تنه درخت + شاخه + یخ + سکه 2X
+function drawMiniHeart(cx,cy,r){
+ctx.save();
+ctx.translate(cx,cy);
+ctx.beginPath();
+ctx.moveTo(0,r*0.45);
+ctx.bezierCurveTo(-r*1.1,-r*0.35,-r*0.55,-r*1.1,0,-r*0.45);
+ctx.bezierCurveTo(r*0.55,-r*1.1,r*1.1,-r*0.35,0,r*0.45);
+ctx.closePath();
+ctx.fillStyle="#ff2a55";
+ctx.fill();
+ctx.strokeStyle="#ffffff";
+ctx.lineWidth=1.5;
+ctx.stroke();
+ctx.restore();
+}
+
 function dSeg(x,y,w,h,seg,idx){
-// بدنه چوب استوانه‌ای با سایه روشن مثل ویدیو
 const g=ctx.createLinearGradient(x-w/2,0,x+w/2,0);
 g.addColorStop(0,"#8d5524");
 g.addColorStop(0.35,"#c68642");
@@ -486,11 +545,9 @@ g.addColorStop(1,"#6f3e16");
 ctx.fillStyle=g;
 ctx.fillRect(x-w/2,y,w,h);
 
-// خط جداکننده حلقه‌های تنه
 ctx.fillStyle="rgba(60,30,10,0.45)";
 ctx.fillRect(x-w/2,y+h-3,w,3);
 
-// شاخه چوبی
 if(seg.br==="left"||seg.br==="right"){
 const bw=Math.min(86,W*0.22),bh=20,by=y+h*0.44;
 const bx=seg.br==="left"?x-w/2-bw+2:x+w/2-2;
@@ -502,7 +559,6 @@ ctx.strokeStyle="#4a250b";
 ctx.lineWidth=2;
 ctx.strokeRect(bx,by,bw,bh);
 
-// سکه طلایی 2X آویزان زیر شاخه
 if(seg.coin){
 const cx=seg.br==="left"?bx+bw*0.38:bx+bw*0.62;
 const cy=by+bh+18;
@@ -521,9 +577,23 @@ ctx.textAlign="center";
 ctx.textBaseline="middle";
 ctx.fillText("2X",cx,cy+1);
 }
+
+if(seg.heart){
+const cx=seg.br==="left"?bx+bw*0.38:bx+bw*0.62;
+const cy=by+bh+18;
+ctx.strokeStyle="#4a250b";
+ctx.lineWidth=2;
+ctx.beginPath();ctx.moveTo(cx,by+bh);ctx.lineTo(cx,cy-12);ctx.stroke();
+
+ctx.fillStyle="#ffe4e6";
+ctx.beginPath();ctx.arc(cx,cy,14,0,Math.PI*2);ctx.fill();
+ctx.strokeStyle="#e11d48";
+ctx.lineWidth=2.5;
+ctx.stroke();
+drawMiniHeart(cx,cy+2,9);
+}
 }
 
-// بلوک یخی شفاف روی تنه درخت
 if(seg.ice>0){
 ctx.save();
 ctx.fillStyle=seg.ice===2?"rgba(186,230,253,0.72)":"rgba(224,242,254,0.52)";
@@ -534,7 +604,6 @@ ctx.roundRect(x-w/2-7,y+4,w+14,h-8,8);
 ctx.fill();
 ctx.stroke();
 
-// ترک روی یخ بعد از ضربه اول
 if(seg.ice===1){
 ctx.strokeStyle="#0284c7";
 ctx.lineWidth=2;
@@ -552,7 +621,6 @@ ctx.restore();
 }
 }
 
-// رسم پس‌زمینه معبد ژاپنی و غروب بنفش-نارنجی
 function drawBackdrop(gy){
 const sg=ctx.createLinearGradient(0,0,0,gy);
 sg.addColorStop(0,"#3b1d5e");
@@ -562,17 +630,14 @@ sg.addColorStop(1,"#f4a261");
 ctx.fillStyle=sg;
 ctx.fillRect(0,0,W,gy);
 
-// خورشید غروب بزرگ
 const sr=Math.min(W*0.34,145);
 ctx.fillStyle="rgba(255,230,170,0.65)";
 ctx.beginPath();ctx.arc(W*0.35,gy-sr*0.25,sr,0,Math.PI*2);ctx.fill();
 
-// ابرهای نارنجی نرم
 ctx.fillStyle="rgba(244,140,95,0.45)";
 ctx.beginPath();ctx.roundRect(W*0.08,H*0.28,W*0.34,16,8);ctx.fill();
 ctx.beginPath();ctx.roundRect(W*0.62,H*0.24,W*0.32,15,8);ctx.fill();
 
-// دروازه معبد ژاپنی (Torii) در پس‌زمینه
 ctx.fillStyle="rgba(68,34,92,0.55)";
 const tx=W*0.48,ty=gy;
 ctx.fillRect(tx-85,ty-165,16,165);
@@ -586,7 +651,6 @@ ctx.quadraticCurveTo(tx,ty-145,tx-115,ty-156);
 ctx.closePath();
 ctx.fill();
 
-// درخت‌های بونसाई سیاه در گوشه پایین چپ و راست
 ctx.fillStyle="#18121e";
 ctx.beginPath();ctx.arc(28,gy-24,34,0,Math.PI*2);ctx.arc(62,gy-16,24,0,Math.PI*2);ctx.fill();
 ctx.fillRect(36,gy-22,12,22);
@@ -594,7 +658,6 @@ ctx.fillRect(36,gy-22,12,22);
 ctx.beginPath();ctx.arc(W-28,gy-28,38,0,Math.PI*2);ctx.arc(W-68,gy-18,26,0,Math.PI*2);ctx.fill();
 ctx.fillRect(W-48,gy-24,14,24);
 
-// برگ‌های شناور در باد
 ctx.fillStyle="#1f1629";
 for(const lf of leaves){
 ctx.save();
@@ -606,7 +669,6 @@ ctx.fill();
 ctx.restore();
 }
 
-// زمین خاکی تیره
 const gg=ctx.createLinearGradient(0,gy,0,H);
 gg.addColorStop(0,"#594a47");
 gg.addColorStop(1,"#2b2226");
@@ -614,11 +676,9 @@ ctx.fillStyle=gg;
 ctx.fillRect(0,gy,W,H-gy);
 }
 
-// رسم کمربند بزرگ برای انیمیشن LEVEL UP
 function drawBigBelt(cx,cy,col){
 ctx.save();
 ctx.translate(cx,cy);
-// پرتوهای نور پشت کمربند
 ctx.fillStyle="rgba(255,255,255,0.22)";
 for(let i=0;i<12;i++){
 ctx.save();
@@ -626,13 +686,11 @@ ctx.rotate((i*Math.PI)/6);
 ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(-18,-170);ctx.lineTo(18,-170);ctx.closePath();ctx.fill();
 ctx.restore();
 }
-// دنباله‌های کمربند
 ctx.fillStyle=col;
 ctx.strokeStyle="#1e1b18";
 ctx.lineWidth=4;
 ctx.beginPath();ctx.moveTo(-14,8);ctx.lineTo(-56,82);ctx.lineTo(-30,92);ctx.lineTo(0,22);ctx.closePath();ctx.fill();ctx.stroke();
 ctx.beginPath();ctx.moveTo(14,8);ctx.lineTo(56,82);ctx.lineTo(30,92);ctx.lineTo(0,22);ctx.closePath();ctx.fill();ctx.stroke();
-// بدنه افقی و گره کمربند
 ctx.beginPath();ctx.roundRect(-88,-16,176,28,8);ctx.fill();ctx.stroke();
 ctx.beginPath();ctx.roundRect(-20,-20,40,36,8);ctx.fill();ctx.stroke();
 ctx.restore();
@@ -642,7 +700,6 @@ let lt=performance.now();
 function loop(now){
 const dt=Math.min(0.05,(now-lt)/1000);lt=now;
 
-// حرکت برگ‌ها
 for(const lf of leaves){
 lf.x+=lf.vx;lf.y+=lf.vy;lf.rot+=lf.vrot;
 if(lf.x<-20)lf.x=W+20;
@@ -655,7 +712,13 @@ levelUpAnim-=dt;
 }else{
 tm-=(14+Math.min(chops*0.11,24))*dt;
 document.getElementById("tm-bar").style.width=Math.max(0,tm)+"%";
-if(tm<=0){tm=0;over();}
+if(tm<=0){
+if(extraLives>0){
+consumeExtraLife();
+}else{
+tm=0;over();
+}
+}
 }
 if(doubleTimer>0)doubleTimer-=dt;
 }
@@ -667,34 +730,29 @@ if(shk>0){ctx.translate((Math.random()-0.5)*8,(Math.random()-0.5)*8);shk--;}
 const gy=H*0.80,tw=Math.min(76,W*0.19),sh=70;
 drawBackdrop(gy);
 
-// سایه زیر تنه
 ctx.fillStyle="rgba(20,12,24,0.45)";
 ctx.beginPath();ctx.ellipse(W/2,gy+5,88,9,0,0,Math.PI*2);ctx.fill();
 
-// رسم قطعات تنه درخت
 for(let i=0;i<logs.length;i++){
 const sy=gy-(i+1)*sh;
 if(sy+sh<0)break;
 dSeg(W/2,sy,tw,sh,logs[i],i);
 }
 
-// عدد شمارنده ضربه روی تنه درخت (مثل ویدیو)
 ctx.fillStyle="rgba(255,255,255,0.92)";
 ctx.font="900 28px Tahoma";
 ctx.textAlign="center";
 ctx.textBaseline="middle";
 ctx.fillText(chops,W/2,135);
 
-// قطعات چوب و یخ پرتاب شده
 for(let i=fly.length-1;i>=0;i--){
 const f=fly[i];f.x+=f.vx;f.y+=f.vy;f.vy+=0.68;f.r+=f.vr;
 ctx.save();ctx.translate(f.x,f.y);ctx.rotate(f.r);
-dSeg(0,-f.h/2,f.w,f.h,{br:f.b,ice:0,coin:false},0);
+dSeg(0,-f.h/2,f.w,f.h,{br:f.b,ice:0,coin:false,heart:false},0);
 ctx.restore();
 if(f.y>H+100)fly.splice(i,1);
 }
 
-// خرده‌های چوب و یخ
 for(let i=spl.length-1;i>=0;i--){
 const p=spl[i];p.x+=p.vx;p.y+=p.vy;p.vy+=0.45;p.l-=0.04;
 ctx.fillStyle=p.c;ctx.globalAlpha=Math.max(0,p.l);
@@ -703,7 +761,6 @@ ctx.globalAlpha=1;
 if(p.l<=0)spl.splice(i,1);
 }
 
-// رسم کاراکتر کیدو با لباس قرمز کاراته (دقیقاً شبیه ویدیو)
 const b=getBeltObj(),off=tw/2+38,cx=side==="left"?W/2-off:W/2+off,dir=side==="left"?1:-1;
 ctx.save();
 ctx.translate(cx,gy);
@@ -715,7 +772,6 @@ ctx.scale(dir,1);
 }
 const ip=pt>0;if(pt>0)pt--;
 
-// پاها و شلوار قرمز با نوار سفید
 ctx.fillStyle="#dc2626";
 ctx.fillRect(-12,-24,10,24);
 ctx.fillRect(2,-24,10,24);
@@ -723,29 +779,23 @@ ctx.fillStyle="#ffffff";
 ctx.fillRect(-12,-6,10,6);
 ctx.fillRect(2,-6,10,6);
 
-// بالاتنه لباس قرمز کاراته + یقه سفید
 ctx.fillStyle="#ef4444";
 ctx.beginPath();ctx.roundRect(-15,-54,30,32,4);ctx.fill();
 ctx.fillStyle="#ffffff";
 ctx.beginPath();ctx.moveTo(-4,-54);ctx.lineTo(8,-54);ctx.lineTo(2,-36);ctx.closePath();ctx.fill();
 
-// کمربند فعلی دور کمر
 ctx.fillStyle=b.c;
 ctx.fillRect(-16,-30,32,6);
 ctx.strokeStyle="#111";ctx.lineWidth=1.5;ctx.strokeRect(-16,-30,32,6);
 
-// سر و مو و هدبند مشکی با دنباله آویزان
 ctx.fillStyle="#f5bd8c";
 ctx.beginPath();ctx.roundRect(-14,-82,28,28,6);ctx.fill();
-// چشم
 ctx.fillStyle="#111";
 ctx.fillRect(6,-70,4,4);
-// مو و هدبند
 ctx.fillStyle="#18181b";
 ctx.beginPath();ctx.roundRect(-15,-85,30,10,4);ctx.fill();
 ctx.beginPath();ctx.moveTo(-14,-77);ctx.lineTo(-24,-66);ctx.lineTo(-19,-63);ctx.lineTo(-12,-74);ctx.closePath();ctx.fill();
 
-// مشت زدن و افکت خط سفید ضربه
 const rch=ip?34:16;
 ctx.fillStyle="#ef4444";
 ctx.fillRect(4,-48,rch,10);
@@ -759,7 +809,6 @@ ctx.beginPath();ctx.moveTo(18,-56);ctx.lineTo(44,-43);ctx.lineTo(18,-30);ctx.str
 }
 ctx.restore();
 
-// اعداد شناور +10 و +20
 for(let i=popups.length-1;i>=0;i--){
 const pp=popups[i];
 pp.y+=pp.vy;pp.life-=0.028;
@@ -772,7 +821,6 @@ ctx.globalAlpha=1;
 if(pp.life<=0)popups.splice(i,1);
 }
 
-// نوار قرمز وسط صفحه برای DOUBLE SCORE یا GAME OVER
 if(bannerTimer>0){
 ctx.fillStyle="rgba(220,38,38,0.9)";
 ctx.fillRect(0,H*0.58,W,44);
@@ -783,7 +831,6 @@ ctx.textBaseline="middle";
 ctx.fillText(bannerText,W/2,H*0.58+22);
 }
 
-// انیمیشن تمام‌صفحه LEVEL UP! مثل ویدیو
 if(levelUpAnim>0){
 ctx.fillStyle="rgba(255,255,255,0.45)";
 ctx.fillRect(0,0,W,H);
