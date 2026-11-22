@@ -94,7 +94,7 @@ canvas{display:block;width:100%;height:100%}
 <div id="s1" class="ov">
 <div class="tl">🥋 کیدو کاراته</div>
 <div id="ub">🥋 مبارز آماده</div>
-<p class="st">به چپ و راست ضربه بزن، یخ‌ها را بشکن، سکه 2X و قلب جان اضافه بگیر و کمربندت را ارتقا بده!</p>
+<p class="st">به چپ و راست ضربه بزن، یخ‌ها را بشکن، در مراحل بالاتر قلب جان اضافه بگیر و کمربندت را ارتقا بده!</p>
 <button class="btn bp" onclick="go()">شروع مبارزه 🔥</button>
 <button class="btn br" onclick="rk()">🏆 جدول قهرمانان ماه</button>
 <div class="brand-tag" onclick="openCh()">🎮 اختصاصی کانال <b>@gamee_balee</b></div>
@@ -229,20 +229,6 @@ o.start(t+i*0.02);o.stop(t+i*0.02+0.09);
 });
 }
 
-function playCoin2X(){
-const a=getAudio();if(!a)return;
-const t=a.currentTime;
-[987.77,1318.51].forEach((f,i)=>{
-const o=a.createOscillator(),g=a.createGain();
-o.type="sine";
-o.frequency.setValueAtTime(f,t+i*0.06);
-g.gain.setValueAtTime(0.22,t+i*0.06);
-g.gain.exponentialRampToValueAtTime(0.005,t+i*0.06+0.18);
-o.connect(g);g.connect(a.destination);
-o.start(t+i*0.06);o.stop(t+i*0.06+0.19);
-});
-}
-
 function playHeartSound(){
 const a=getAudio();if(!a)return;
 const t=a.currentTime;
@@ -298,8 +284,9 @@ const belts=[
 const bkey="kb_"+mk();
 let logs=[],side="left",pt=0,score=0,chops=0,best=parseInt(localStorage.getItem(bkey)||"0",10);
 let tm=100,play=false,paused=false,shk=0,ko=false,extraLives=0;
+let generatedCount=0,nextHeartChop=100;
 let fly=[],spl=[],popups=[],leaves=[];
-let doubleTimer=0,levelUpAnim=0,levelUpBelt=belts[1],levelUpMult="1.1X",bannerText="",bannerTimer=0;
+let levelUpAnim=0,levelUpBelt=belts[1],levelUpMult="1.1X",bannerText="",bannerTimer=0;
 
 function updLivesUI(){
 const box=document.getElementById("lives-box");
@@ -329,6 +316,7 @@ return Number((1+lv*0.1).toFixed(1));
 }
 
 function pLog(){
+generatedCount++;
 const prev=logs[logs.length-1];
 let br="none";
 if(prev&&prev.br!=="none")br="none";
@@ -336,22 +324,22 @@ else{
 const r=Math.random();
 br=r<0.43?"left":r<0.86?"right":"none";
 }
-const hasIce=(br==="none"&&chops>15&&Math.random()<0.14);
-let hasCoin=false;
+const hasIce=(br==="none"&&generatedCount>18&&Math.random()<0.14);
 let hasHeart=false;
-if(br!=="none"&&!hasIce){
-if(chops>20&&extraLives<3&&Math.random()<0.045){
+
+// قلب جان اضافه فقط بعد از ضربه ۱۰۰ام و با فاصله خیلی زیاد (حداقل ۸۵ تا ۱۳۰ ضربه فاصله) و سقف ۲ قلب ظاهر می‌شود
+if(br!=="none"&&!hasIce&&generatedCount>=nextHeartChop&&extraLives<2&&Math.random()<0.015){
 hasHeart=true;
-}else if(chops>10&&Math.random()<0.11){
-hasCoin=true;
+nextHeartChop=generatedCount+85+Math.floor(Math.random()*45);
 }
-}
-logs.push({br,ice:hasIce?2:0,coin:hasCoin,heart:hasHeart});
+
+logs.push({br,ice:hasIce?2:0,heart:hasHeart});
 }
 
 function go(){
 score=0;chops=0;tm=100;side="left";pt=0;ko=false;paused=false;extraLives=0;
-doubleTimer=0;levelUpAnim=0;bannerTimer=0;
+generatedCount=0;nextHeartChop=100+Math.floor(Math.random()*35);
+levelUpAnim=0;bannerTimer=0;
 fly=[];spl=[];popups=[];
 play=true;
 updLivesUI();
@@ -360,7 +348,7 @@ document.getElementById("sb").innerText="0";
 document.getElementById("mult-txt").innerText="1X";
 document.getElementById("lv-bar").style.width="0%";
 ["s1","s2","s3"].forEach(i=>document.getElementById(i).classList.add("hd"));
-logs=[{br:"none",ice:0,coin:false,heart:false},{br:"none",ice:0,coin:false,heart:false},{br:"none",ice:0,coin:false,heart:false}];
+logs=[{br:"none",ice:0,heart:false},{br:"none",ice:0,heart:false},{br:"none",ice:0,heart:false}];
 for(let i=0;i<14;i++)pLog();
 }
 
@@ -382,8 +370,8 @@ playHeartSound();
 bannerText="SAVED! ❤️";
 bannerTimer=1.2;
 addPopup(W/2,H*0.68,"جان اضافه مصرف شد ❤️","#ff4d6d",true);
-logs[0]={br:"none",ice:0,coin:false,heart:false};
-logs[1]={br:"none",ice:0,coin:false,heart:false};
+logs[0]={br:"none",ice:0,heart:false};
+logs[1]={br:"none",ice:0,heart:false};
 tm=Math.max(tm,55);
 }
 
@@ -456,20 +444,13 @@ l:1
 fly.push({x:W/2,y:gy-sh/2,vx:d*8.5,vy:-6.2,r:0,vr:d*0.22,b:popped.br,w:tw,h:sh,ice:wasIce});
 shk=4;
 
+// گرفتن قلب جان اضافه ❤️ اگر پایین آمده و بازیکن در همان سمت باشد
 if(logs[0].heart&&logs[0].br!==side){
 logs[0].heart=false;
-extraLives=Math.min(3,extraLives+1);
+extraLives=Math.min(2,extraLives+1);
 updLivesUI();
 playHeartSound();
 addPopup(W/2+(side==="left"?-45:45),gy-sh*1.4,"+1 LIFE ❤️","#ff4d6d",true);
-}
-
-if(logs[0].coin&&logs[0].br!==side){
-logs[0].coin=false;
-doubleTimer=6.0;
-bannerText="DOUBLE SCORE!";
-bannerTimer=1.6;
-playCoin2X();
 }
 
 if(logs[0].br===side){
@@ -480,12 +461,11 @@ return;
 
 chops++;
 const mult=getMult();
-const dbl=doubleTimer>0?2:1;
-const pts=Math.round((wasIce?20:10)*mult*dbl);
+const pts=Math.round((wasIce?20:10)*mult);
 score+=pts;
 
 document.getElementById("sb").innerText=score;
-addPopup(W/2+(Math.random()-0.5)*18,gy-sh*1.15,"+"+pts,(wasIce||dbl>1)?"#fde047":"#ffffff",wasIce||dbl>1);
+addPopup(W/2+(Math.random()-0.5)*18,gy-sh*1.15,"+"+pts,wasIce?"#fde047":"#ffffff",wasIce);
 
 tm=Math.min(100,tm+5.8);
 const prog=(chops%100);
@@ -559,25 +539,7 @@ ctx.strokeStyle="#4a250b";
 ctx.lineWidth=2;
 ctx.strokeRect(bx,by,bw,bh);
 
-if(seg.coin){
-const cx=seg.br==="left"?bx+bw*0.38:bx+bw*0.62;
-const cy=by+bh+18;
-ctx.strokeStyle="#4a250b";
-ctx.lineWidth=2;
-ctx.beginPath();ctx.moveTo(cx,by+bh);ctx.lineTo(cx,cy-12);ctx.stroke();
-
-ctx.fillStyle="#facc15";
-ctx.beginPath();ctx.arc(cx,cy,14,0,Math.PI*2);ctx.fill();
-ctx.strokeStyle="#ca8a04";
-ctx.lineWidth=2.5;
-ctx.stroke();
-ctx.fillStyle="#713f12";
-ctx.font="900 12px Tahoma";
-ctx.textAlign="center";
-ctx.textBaseline="middle";
-ctx.fillText("2X",cx,cy+1);
-}
-
+// مدال قلب جان اضافه آویزان زیر شاخه
 if(seg.heart){
 const cx=seg.br==="left"?bx+bw*0.38:bx+bw*0.62;
 const cy=by+bh+18;
@@ -720,7 +682,6 @@ tm=0;over();
 }
 }
 }
-if(doubleTimer>0)doubleTimer-=dt;
 }
 if(bannerTimer>0)bannerTimer-=dt;
 
@@ -748,7 +709,7 @@ ctx.fillText(chops,W/2,135);
 for(let i=fly.length-1;i>=0;i--){
 const f=fly[i];f.x+=f.vx;f.y+=f.vy;f.vy+=0.68;f.r+=f.vr;
 ctx.save();ctx.translate(f.x,f.y);ctx.rotate(f.r);
-dSeg(0,-f.h/2,f.w,f.h,{br:f.b,ice:0,coin:false,heart:false},0);
+dSeg(0,-f.h/2,f.w,f.h,{br:f.b,ice:0,heart:false},0);
 ctx.restore();
 if(f.y>H+100)fly.splice(i,1);
 }
