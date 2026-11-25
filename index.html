@@ -47,7 +47,8 @@ canvas{display:block;width:100%;height:100%}
 .rr.me{background:rgba(255,159,28,.32);border:1.5px solid #ff9f1c}
 .rl{display:flex;align-items:center;gap:8px;overflow:hidden}
 .rn{min-width:28px;font-size:14px;font-weight:900;color:#ffd166}
-.ra{width:36px;height:36px;border-radius:50%;object-fit:cover;background:linear-gradient(135deg,#5a3818,#2e1b0c);border:2px solid #ffcc33;display:flex;align-items:center;justify-content:center;font-weight:bold;color:#fff;font-size:13px;flex-shrink:0}
+.ra{position:relative;width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#5a3818,#2e1b0c);border:2px solid #ffcc33;display:flex;align-items:center;justify-content:center;font-weight:bold;color:#fff;font-size:14px;overflow:hidden;flex-shrink:0}
+.ra img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .ri{text-align:right;overflow:hidden}
 .rnm{font-size:13px;font-weight:bold;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:135px}
 .rb{font-size:11px;color:#d8c8b4}
@@ -176,10 +177,8 @@ const row=(x,me)=>{
 const bg=x.rank===1?"🥇":x.rank===2?"🥈":x.rank===3?"🥉":"#"+x.rank;
 const rawName=(x.name||"مبارز مهمان").trim()||"مبارز مهمان";
 const fl=rawName.charAt(0).toUpperCase();
-const fallbackHtml="<span style='line-height:1'>"+fl+"</span>";
-const av=x.photo
-  ?"<img class='ra' src='"+x.photo+"' onerror=\"this.outerHTML='&lt;div class=ra&gt;🥋'+String.fromCharCode("+fl.charCodeAt(0)+")+'&lt;/div&gt;'\">"
-  :"<div class='ra'>🥋"+fl+"</div>";
+const imgTag=x.photo?"<img src='"+x.photo+"' onerror=\"this.style.display='none'\">":"";
+const av="<div class='ra'><span>"+fl+"</span>"+imgTag+"</div>";
 return"<div class='rr "+(me?"me":"")+"'><div class='rl'><div class='rn'>"+bg+"</div>"+av+"<div class='ri'><div class='rnm'>"+rawName+"</div><div class='rb'>کمربند "+(x.belt||"سفید")+"</div></div></div><div class='rs'><span class='rsv'>"+x.score+"</span><span class='rsl'>امتیاز</span></div></div>";
 };
 let h=list.slice(0,20).map(x=>row(x,x.uid===usr.id)).join("");
