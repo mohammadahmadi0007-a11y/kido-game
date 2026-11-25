@@ -47,7 +47,7 @@ canvas{display:block;width:100%;height:100%}
 .rr.me{background:rgba(255,159,28,.32);border:1.5px solid #ff9f1c}
 .rl{display:flex;align-items:center;gap:8px;overflow:hidden}
 .rn{min-width:28px;font-size:14px;font-weight:900;color:#ffd166}
-.ra{width:36px;height:36px;border-radius:50%;object-fit:cover;background:#4a3520;border:2px solid #ffcc33;display:flex;align-items:center;justify-content:center;font-weight:bold;color:#fff;flex-shrink:0}
+.ra{width:36px;height:36px;border-radius:50%;object-fit:cover;background:linear-gradient(135deg,#5a3818,#2e1b0c);border:2px solid #ffcc33;display:flex;align-items:center;justify-content:center;font-weight:bold;color:#fff;font-size:13px;flex-shrink:0}
 .ri{text-align:right;overflow:hidden}
 .rnm{font-size:13px;font-weight:bold;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:135px}
 .rb{font-size:11px;color:#d8c8b4}
@@ -174,9 +174,13 @@ const list=Object.keys(d).map(k=>({uid:k,...d[k]})).sort((a,b)=>b.score-a.score|
 let cr=1;list.forEach((x,i)=>{if(i>0&&x.score<list[i-1].score)cr=i+1;x.rank=cr});
 const row=(x,me)=>{
 const bg=x.rank===1?"🥇":x.rank===2?"🥈":x.rank===3?"🥉":"#"+x.rank;
-const fl=(x.name||"ک").charAt(0);
-const av=x.photo?"<img class='ra' src='"+x.photo+"'>":"<div class='ra'>"+fl+"</div>";
-return"<div class='rr "+(me?"me":"")+"'><div class='rl'><div class='rn'>"+bg+"</div>"+av+"<div class='ri'><div class='rnm'>"+(x.name||"بازیکن")+"</div><div class='rb'>کمربند "+(x.belt||"سفید")+"</div></div></div><div class='rs'><span class='rsv'>"+x.score+"</span><span class='rsl'>امتیاز</span></div></div>";
+const rawName=(x.name||"مبارز مهمان").trim()||"مبارز مهمان";
+const fl=rawName.charAt(0).toUpperCase();
+const fallbackHtml="<span style='line-height:1'>"+fl+"</span>";
+const av=x.photo
+  ?"<img class='ra' src='"+x.photo+"' onerror=\"this.outerHTML='&lt;div class=ra&gt;🥋'+String.fromCharCode("+fl.charCodeAt(0)+")+'&lt;/div&gt;'\">"
+  :"<div class='ra'>🥋"+fl+"</div>";
+return"<div class='rr "+(me?"me":"")+"'><div class='rl'><div class='rn'>"+bg+"</div>"+av+"<div class='ri'><div class='rnm'>"+rawName+"</div><div class='rb'>کمربند "+(x.belt||"سفید")+"</div></div></div><div class='rs'><span class='rsv'>"+x.score+"</span><span class='rsl'>امتیاز</span></div></div>";
 };
 let h=list.slice(0,20).map(x=>row(x,x.uid===usr.id)).join("");
 const mi=list.findIndex(x=>x.uid===usr.id);
@@ -248,7 +252,6 @@ const len=Math.max(1,Math.floor(a.sampleRate*dur));
 const buf=a.createBuffer(1,len,a.sampleRate);
 const data=buf.getChannelData(0);
 
-// ترکیبی از ضربه اولیه و خرده‌شیشه‌های نامنظم
 for(let i=0;i<len;i++){
 const p=i/len;
 const env=Math.pow(1-p,shatter?1.9:3.2);
@@ -278,7 +281,6 @@ bp.connect(mainGain);
 mainGain.connect(a.destination);
 src.start(t);
 
-// برخوردهای کوتاه و زنگ‌دار خرده‌شیشه
 const clinks=shatter?7:2;
 for(let c=0;c<clinks;c++){
 const delay=c*(shatter?0.032:0.038)+Math.random()*0.015;
@@ -537,7 +539,6 @@ ctx.stroke();
 ctx.restore();
 }
 
-// نقش‌نگار و بافت طبیعی چوب روی تنه اصلی
 function drawWoodGrainOnTrunk(x,y,w,h,seed){
 ctx.save();
 ctx.beginPath();
@@ -556,7 +557,6 @@ ctx.bezierCurveTo(gx+wave,y+h*0.35,gx-wave,y+h*0.7,gx+wave*0.5,y+h);
 ctx.stroke();
 }
 
-// گره چوبی کوچک روی تنه
 const knotX=x+(((seed||1)%5)-2)*9;
 const knotY=y+h*(0.32+(((seed||1)*19)%30)/100);
 ctx.strokeStyle="rgba(75,35,10,0.45)";
@@ -568,7 +568,6 @@ ctx.stroke();
 ctx.restore();
 }
 
-// شاخه با طیف رنگ متفاوت از تنه اصلی و بافت چوب طبیعی
 function drawDistinctBranch(bx,by,bw,bh,dir,seed){
 const bg=ctx.createLinearGradient(0,by,0,by+bh);
 bg.addColorStop(0,"#6e3717");
@@ -579,7 +578,6 @@ ctx.save();
 ctx.fillStyle=bg;
 ctx.fillRect(bx,by,bw,bh);
 
-// رگه‌های طولی چوب روی شاخه
 ctx.strokeStyle="rgba(35,14,4,0.45)";
 ctx.lineWidth=1.3;
 ctx.beginPath();
@@ -589,14 +587,12 @@ ctx.moveTo(bx+7,by+bh*0.68);
 ctx.quadraticCurveTo(bx+bw*0.5,by+bh*0.74-(seed%3-1)*2,bx+bw-6,by+bh*0.66);
 ctx.stroke();
 
-// سایه زیر شاخه و قاب تیره برای تمایز کامل
 ctx.fillStyle="rgba(25,10,3,0.45)";
 ctx.fillRect(bx,by+bh-3,bw,3);
 ctx.strokeStyle="#2d1306";
 ctx.lineWidth=2;
 ctx.strokeRect(bx,by,bw,bh);
 
-// گره انتهای شاخه
 const tipX=dir==="left"?bx+3:bx+bw-3;
 ctx.fillStyle="#57280e";
 ctx.beginPath();
@@ -668,7 +664,6 @@ ctx.restore();
 }
 }
 
-// پس‌زمینه آرام و خلوت بدون تداخل رنگ با چوب و شاخه‌ها و بدون ریزش برگ
 function drawBackdrop(gy){
 const sg=ctx.createLinearGradient(0,0,0,gy);
 sg.addColorStop(0,"#22133b");
