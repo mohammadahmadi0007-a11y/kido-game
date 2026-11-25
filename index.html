@@ -239,58 +239,20 @@ o.connect(g);g.connect(a.destination);
 o.start(t);o.stop(t+0.095);
 }
 
-// صدای واقعی ترک خوردن و خرد شدن شیشه
 function playIceCrack(shatter=false){
 const a=getAudio();if(!a)return;
 const t=a.currentTime;
-
-// لایه ۱: صدای تیز و شکننده شیشه (نویز فیلترشده با فرکانس بالا)
-const dur=shatter?0.24:0.11;
-const len=Math.max(1,Math.floor(a.sampleRate*dur));
-const buf=a.createBuffer(1,len,a.sampleRate);
-const data=buf.getChannelData(0);
-for(let i=0;i<len;i++){
-const p=i/len;
-const env=Math.pow(1-p,shatter?2.2:3.5);
-const shardBurst=Math.sin(i*(0.35+(i%7)*0.11))*0.6+(Math.random()*2-1)*0.8;
-data[i]=shardBurst*env;
-}
-const noiseSrc=a.createBufferSource();
-noiseSrc.buffer=buf;
-
-const hp=a.createBiquadFilter();
-hp.type="highpass";
-hp.frequency.setValueAtTime(shatter?2200:2800,t);
-
-const bp=a.createBiquadFilter();
-bp.type="bandpass";
-bp.frequency.setValueAtTime(shatter?4100:5200,t);
-bp.Q.setValueAtTime(2.6,t);
-
-const nGain=a.createGain();
-nGain.gain.setValueAtTime(shatter?0.48:0.28,t);
-nGain.gain.exponentialRampToValueAtTime(0.002,t+dur);
-
-noiseSrc.connect(hp);
-hp.connect(bp);
-bp.connect(nGain);
-nGain.connect(a.destination);
-noiseSrc.start(t);
-
-// لایه ۲: خرده-برخوردهای سریع شیشه‌ای (clinks)
-const hits=shatter?6:2;
-for(let k=0;k<hits;k++){
-const delay=k*(shatter?0.028:0.035)+Math.random()*0.012;
-const freq=(shatter?2600:3400)+Math.random()*2800;
+const freqs=shatter?[1400,2100,2850]:[1100,1650];
+freqs.forEach((f,i)=>{
 const o=a.createOscillator(),g=a.createGain();
-o.type="sine";
-o.frequency.setValueAtTime(freq,t+delay);
-o.frequency.exponentialRampToValueAtTime(freq*0.62,t+delay+0.045);
-g.gain.setValueAtTime(shatter?0.16:0.11,t+delay);
-g.gain.exponentialRampToValueAtTime(0.001,t+delay+0.05);
+o.type="square";
+o.frequency.setValueAtTime(f,t+i*0.02);
+o.frequency.exponentialRampToValueAtTime(f*0.45,t+i*0.02+0.08);
+g.gain.setValueAtTime(0.14,t+i*0.02);
+g.gain.exponentialRampToValueAtTime(0.005,t+i*0.02+0.085);
 o.connect(g);g.connect(a.destination);
-o.start(t+delay);o.stop(t+delay+0.055);
-}
+o.start(t+i*0.02);o.stop(t+i*0.02+0.09);
+});
 }
 
 function playHeartSound(){
@@ -536,47 +498,6 @@ ctx.stroke();
 ctx.restore();
 }
 
-// شاخه‌ها کاملاً هم‌جنس و هم‌رنگ خود تنه درخت با بافت چوب و حاشیه واضح
-function drawWoodBranch(bx,by,bw,bh,dir){
-const g=ctx.createLinearGradient(0,by,0,by+bh);
-g.addColorStop(0,"#8d5524");
-g.addColorStop(0.35,"#c68642");
-g.addColorStop(0.75,"#a36229");
-g.addColorStop(1,"#6f3e16");
-
-ctx.fillStyle=g;
-ctx.fillRect(bx,by,bw,bh);
-
-// رگه‌های پوست درخت روی شاخه
-ctx.strokeStyle="rgba(60,30,10,0.42)";
-ctx.lineWidth=1.5;
-ctx.beginPath();
-ctx.moveTo(bx+6,by+bh*0.32);
-ctx.lineTo(bx+bw-6,by+bh*0.32);
-ctx.moveTo(bx+10,by+bh*0.68);
-ctx.lineTo(bx+bw-8,by+bh*0.68);
-ctx.stroke();
-
-// سایه زیرین شاخه
-ctx.fillStyle="rgba(60,30,10,0.45)";
-ctx.fillRect(bx,by+bh-3,bw,3);
-
-// حاشیه تیره واضح برای تفکیک کامل از پس‌زمینه
-ctx.strokeStyle="#4a250b";
-ctx.lineWidth=2;
-ctx.strokeRect(bx,by,bw,bh);
-
-// گره انتهای شاخه
-const tipX=dir==="left"?bx+3:bx+bw-3;
-ctx.fillStyle="#784217";
-ctx.beginPath();
-ctx.ellipse(tipX,by+bh*0.5,3.5,bh*0.34,0,0,Math.PI*2);
-ctx.fill();
-ctx.strokeStyle="#4a250b";
-ctx.lineWidth=1.5;
-ctx.stroke();
-}
-
 function dSeg(x,y,w,h,seg,idx){
 const g=ctx.createLinearGradient(x-w/2,0,x+w/2,0);
 g.addColorStop(0,"#8d5524");
@@ -592,7 +513,13 @@ ctx.fillRect(x-w/2,y+h-3,w,3);
 if(seg.br==="left"||seg.br==="right"){
 const bw=Math.min(86,W*0.22),bh=20,by=y+h*0.44;
 const bx=seg.br==="left"?x-w/2-bw+2:x+w/2-2;
-drawWoodBranch(bx,by,bw,bh,seg.br);
+ctx.fillStyle="#a36229";
+ctx.fillRect(bx,by,bw,bh);
+ctx.fillStyle="#784217";
+ctx.fillRect(bx,by+bh-5,bw,5);
+ctx.strokeStyle="#4a250b";
+ctx.lineWidth=2;
+ctx.strokeRect(bx,by,bw,bh);
 
 if(seg.heart){
 const cx=seg.br==="left"?bx+bw*0.38:bx+bw*0.62;
