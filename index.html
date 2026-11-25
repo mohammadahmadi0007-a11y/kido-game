@@ -47,7 +47,7 @@ canvas{display:block;width:100%;height:100%}
 .rr.me{background:rgba(255,159,28,.32);border:1.5px solid #ff9f1c}
 .rl{display:flex;align-items:center;gap:8px;overflow:hidden}
 .rn{min-width:28px;font-size:14px;font-weight:900;color:#ffd166}
-.ra{position:relative;width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#5a3818,#2e1b0c);border:2px solid #ffcc33;display:flex;align-items:center;justify-content:center;font-weight:bold;color:#fff;font-size:14px;overflow:hidden;flex-shrink:0}
+.ra{position:relative;width:36px;height:36px;border-radius:50%;object-fit:cover;background:linear-gradient(135deg,#5a3818,#2e1b0c);border:2px solid #ffcc33;display:flex;align-items:center;justify-content:center;font-weight:bold;color:#fff;font-size:14px;overflow:hidden;flex-shrink:0}
 .ra img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .ri{text-align:right;overflow:hidden}
 .rnm{font-size:13px;font-weight:bold;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:135px}
@@ -158,24 +158,70 @@ forwardToBale(txt);
 }
 
 const mk=()=>{const d=new Date();return"league_"+d.getFullYear()+"_"+String(d.getMonth()+1).padStart(2,"0")};
-let usr={id:localStorage.getItem("kid")||("g_"+Math.floor(1e5+Math.random()*9e5)),name:"مبارز مهمان",photo:""};
-localStorage.setItem("kid",usr.id);
+
+function syncBaleIdentity(){
+let id="";
+let name="";
+let photo="";
+let isGuest=true;
+
 try{
 const raw=(location.hash||"")+"&"+(location.search||"");
 const m=raw.match(/(?:tgWebAppData|baleWebAppData)=([^&]+)/);
-if(m&&m[1]){const u=JSON.parse(new URLSearchParams(decodeURIComponent(m[1])).get("user"));if(u&&u.id){usr.id="bale_"+u.id;usr.name=[u.first_name,u.last_name].filter(Boolean).join(" ")||u.username||"کاربر بله";usr.photo=u.photo_url||""}}
-if(window.Bale&&Bale.WebApp){Bale.WebApp.ready();Bale.WebApp.expand();const u=Bale.WebApp.initDataUnsafe&&Bale.WebApp.initDataUnsafe.user;if(u&&u.id){usr.id="bale_"+u.id;usr.name=[u.first_name,u.last_name].filter(Boolean).join(" ")||u.username||"کاربر بله";usr.photo=u.photo_url||""}}
+if(m&&m[1]){
+const u=JSON.parse(new URLSearchParams(decodeURIComponent(m[1])).get("user"));
+if(u&&u.id){
+id="bale_"+u.id;
+name=[u.first_name,u.last_name].filter(Boolean).join(" ").trim()||(u.username?u.username.trim():"");
+photo=u.photo_url||"";
+isGuest=false;
+}
+}
+if(window.Bale&&Bale.WebApp){
+Bale.WebApp.ready();
+Bale.WebApp.expand();
+const u=Bale.WebApp.initDataUnsafe&&Bale.WebApp.initDataUnsafe.user;
+if(u&&u.id){
+id="bale_"+u.id;
+name=[u.first_name,u.last_name].filter(Boolean).join(" ").trim()||(u.username?u.username.trim():"");
+photo=u.photo_url||"";
+isGuest=false;
+}
+}
 }catch(e){}
-document.getElementById("ub").innerText="🥋 مبارز: "+usr.name;
+
+if(!id){
+id=localStorage.getItem("kid")||("u_"+Math.floor(1e5+Math.random()*9e5));
+localStorage.setItem("kid",id);
+}
+if(!name){
+const savedName=(localStorage.getItem("kname")||"").trim();
+if(savedName&&savedName!=="مبارز مهمان")name=savedName;
+}
+if(name&&name!=="مبارز مهمان"){
+localStorage.setItem("kname",name);
+}
+return{id,name,photo,isGuest};
+}
+
+let usr=syncBaleIdentity();
+document.getElementById("ub").innerText="🥋 مبارز: "+(usr.name||"حساب بله");
 
 let cachedHtml=localStorage.getItem("kcache_"+mk())||"";
 function buildBoard(d){
 if(!d)return"<div style='padding:20px;color:#ffd166'>هنوز رکوردی ثبت نشده!</div>";
-const list=Object.keys(d).map(k=>({uid:k,...d[k]})).sort((a,b)=>b.score-a.score||(a.updatedAt||9e15)-(b.updatedAt||9e15));
+const list=Object.keys(d)
+  .map(k=>({uid:k,...d[k]}))
+  .filter(x=>{
+    const nm=(x.name||"").trim();
+    return nm && nm!=="مبارز مهمان" && !String(x.uid||"").startsWith("g_");
+  })
+  .sort((a,b)=>b.score-a.score||(a.updatedAt||9e15)-(b.updatedAt||9e15));
+if(!list.length)return"<div style='padding:20px;color:#ffd166'>هنوز رکوردی ثبت نشده!</div>";
 let cr=1;list.forEach((x,i)=>{if(i>0&&x.score<list[i-1].score)cr=i+1;x.rank=cr});
 const row=(x,me)=>{
 const bg=x.rank===1?"🥇":x.rank===2?"🥈":x.rank===3?"🥉":"#"+x.rank;
-const rawName=(x.name||"مبارز مهمان").trim()||"مبارز مهمان";
+const rawName=(x.name||"").trim();
 const fl=rawName.charAt(0).toUpperCase();
 const imgTag=x.photo?"<img src='"+x.photo+"' onerror=\"this.style.display='none'\">":"";
 const av="<div class='ra'><span>"+fl+"</span>"+imgTag+"</div>";
@@ -198,7 +244,9 @@ if(!document.getElementById("s3").classList.contains("hd"))document.getElementBy
 prefetchBoard();
 
 async function sv(sc,bl){
-if(sc<=0)return;
+usr=syncBaleIdentity();
+document.getElementById("ub").innerText="🥋 مبارز: "+(usr.name||"حساب بله");
+if(sc<=0||!usr.name||usr.name==="مبارز مهمان")return;
 const u=DB+"/"+mk()+"/"+usr.id+".json";
 try{
 await fetch(u,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:usr.name,photo:usr.photo,score:sc,belt:bl,updatedAt:Date.now()})});
@@ -207,6 +255,8 @@ prefetchBoard();
 }
 
 function rk(){
+usr=syncBaleIdentity();
+document.getElementById("ub").innerText="🥋 مبارز: "+(usr.name||"حساب بله");
 const box=document.getElementById("lb");
 box.innerHTML=cachedHtml||"<div style='padding:20px'>در حال دریافت رتبه‌ها...</div>";
 document.getElementById("s3").classList.remove("hd");
@@ -384,6 +434,8 @@ logs.push({br,ice:hasIce?2:0,heart:hasHeart,seed:generatedCount});
 }
 
 function go(){
+usr=syncBaleIdentity();
+document.getElementById("ub").innerText="🥋 مبارز: "+(usr.name||"حساب بله");
 score=0;chops=0;tm=100;side="left";pt=0;ko=false;paused=false;
 generatedCount=0;nextHeartChop=80+Math.floor(Math.random()*35);
 levelUpAnim=0;bannerTimer=0;
